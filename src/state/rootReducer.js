@@ -1,5 +1,7 @@
 import { combineReducers } from "redux";
 
-export default combineReducers({
+import employeeList from './employeeList/reducer'
 
+export default combineReducers({
+    employeeList,
 })
