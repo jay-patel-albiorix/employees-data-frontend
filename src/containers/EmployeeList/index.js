@@ -99,6 +99,10 @@ const List = ({
     changeFilter(_get(event, "target.value"))
   }, [])
 
+  const handleAddNewRoute = useCallback(() => history.push("/employee-form"), [])
+
+  const handleEditRoute = useCallback(id => history.push(`/employee-form/${id}`))
+
   const { 
     getTableProps, 
     headerGroups, 
@@ -130,7 +134,9 @@ const List = ({
               value={search}
               onChange={handleSearch}
             />
-            <Button className={classes.spaced} variant="contained" color="primary">
+            <Button className={classes.spaced} variant="contained" color="primary"
+              onClick={handleAddNewRoute}
+            >
               Add
             </Button>
           </Box>
@@ -153,9 +159,7 @@ const List = ({
                   <TableRow 
                     {...row.getRowProps()} 
                     hover
-                    onClick={() => {
-                      console.log("row onClick", _get(row, "original"))
-                    }}
+                    onClick={handleEditRoute.bind(this, _get(row, "original._id"))}
                   >
                     {row.cells.map(cell => {
                       return (
@@ -174,7 +178,7 @@ const List = ({
                   count={count}
                   page={currentPageIndex}
                   rowsPerPage={rowsPerPage}
-                  rowsPerPageOptions={[1, 2, 3, 5, 10, 25, 50]}
+                  rowsPerPageOptions={[5, 10, 25, 50]}
                   onPageChange={handlePageChange}
                   onRowsPerPageChange={handleRowsPerPageChange}
                 />

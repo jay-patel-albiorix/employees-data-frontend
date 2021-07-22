@@ -15,7 +15,7 @@ const initialState = {
 }
 
 export const reducer = (state = initialState, { type, payload }) => {
-    console.log("reducer state", state)
+    // console.log("reducer state", state)
     switch(type) {
         case SET_EMPLOYEE_LIST_DATA:
             return {
