@@ -1,4 +1,8 @@
 import _get from 'lodash/get'
+import _map from 'lodash/map'
+import _split from 'lodash/split'
+import _trim from 'lodash/trim'
+
 
 import { 
     SET_EMPLOYEE_LIST_DATA,
@@ -11,20 +15,79 @@ import api from '../../api'
 
 export const getListData = (skip, limit, search) => async dispatch => {
     try {
+        const split = _split(_trim(search), / +/)
+        const filter = {
+            $or: [
+                ..._map(
+                    split,
+                    splitWord => (
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: "$personal_details.first_name",
+                                    regex: splitWord,
+                                    options: "i"
+                                }
+                            }
+
+                        }
+                    )
+                ),
+                ..._map(
+                    split,
+                    splitWord => (
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: "$personal_details.last_name",
+                                    regex: splitWord,
+                                    options: "i"
+                                }
+                            }
+
+                        }
+                    )
+                ),
+                ..._map(
+                    split,
+                    splitWord => (
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: "$current_work.designation",
+                                    regex: splitWord,
+                                    options: "i"
+                                }
+                            }
+
+                        }
+                    )
+                ),
+                ..._map(
+                    split,
+                    splitWord => (
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: "$current_work.department",
+                                    regex: splitWord,
+                                    options: "i"
+                                }
+                            }
+
+                        }
+                    )
+                )
+            ]
+        }
+
         const query = {
             params: {
                 skip,
                 limit,
-                // filter: search ? { 
-                //     $or: [ 
-                //         { 
-                //             "personal_details.first_name": { 
-                //                 $regex: search, 
-                //                 $options: "i" 
-                //             } 
-                //         } 
-                //     ] 
-                // }: {},
+                filter: _trim(search) ? 
+                filter
+                : {},
             },
         }
         const { data } = await api.employee.get(query)
