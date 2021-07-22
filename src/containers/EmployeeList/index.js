@@ -58,8 +58,14 @@ const List = ({
 }) => {
   console.log("rendering employee list")
   useEffect(() => {
-    console.log("getting listData", currentPageIndex, rowsPerPage, search)
-      getListData(currentPageIndex * rowsPerPage, rowsPerPage, search)
+    const keys = {
+      "personal_details.first_name": 1,
+      "personal_details.last_name": 1,
+      "current_work.designation": 1,
+      "current_work.department": 1,
+    }
+    console.log("getting listData", currentPageIndex, rowsPerPage, search, keys)
+      getListData(currentPageIndex * rowsPerPage, rowsPerPage, search, keys)
   }, [getListData, currentPageIndex, rowsPerPage, search])
 
   const classes = useStyles()
@@ -128,7 +134,7 @@ const List = ({
               Add
             </Button>
           </Box>
-          <MaUTable {...getTableProps()}>
+          <MaUTable stickyHeader {...getTableProps()}>
             <TableHead>
               {headerGroups.map(headerGroup => (
                 <TableRow {...headerGroup.getHeaderGroupProps()}>
@@ -144,7 +150,13 @@ const List = ({
               {rows.map((row, i) => {
                 prepareRow(row)
                 return (
-                  <TableRow {...row.getRowProps()}>
+                  <TableRow 
+                    {...row.getRowProps()} 
+                    hover
+                    onClick={() => {
+                      console.log("row onClick", _get(row, "original"))
+                    }}
+                  >
                     {row.cells.map(cell => {
                       return (
                         <TableCell {...cell.getCellProps()}>
@@ -187,7 +199,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        getListData: (skip, limit, search) => dispatch(getListData(skip, limit, search)),
+        getListData: (skip, limit, search, keys) => dispatch(getListData(skip, limit, search, keys)),
         changePage: newPageIndex => dispatch(changePage(newPageIndex)),
         changeRowPerPage: newRowPerPage => dispatch(changeRowPerPage(newRowPerPage)),
         changeFilter: search => dispatch(changeFilter(search)),

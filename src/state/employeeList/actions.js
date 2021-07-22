@@ -13,7 +13,7 @@ import {
 
 import api from '../../api'
 
-export const getListData = (skip, limit, search) => async dispatch => {
+export const getListData = (skip, limit, search, keys) => async dispatch => {
     try {
         const split = _split(_trim(search), / +/)
         const filter = {
@@ -85,9 +85,8 @@ export const getListData = (skip, limit, search) => async dispatch => {
             params: {
                 skip,
                 limit,
-                filter: _trim(search) ? 
-                filter
-                : {},
+                filter: _trim(search) ? filter : {},
+                keys,
             },
         }
         const { data } = await api.employee.get(query)
