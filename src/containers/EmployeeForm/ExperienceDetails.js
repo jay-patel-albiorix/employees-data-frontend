@@ -1,19 +1,31 @@
 import React from 'react'
-import { FieldArray } from 'redux-form'
+import { reduxForm, FieldArray } from 'redux-form'
 
+import { makeStyles } from '@material-ui/core/styles'
 import Box from '@material-ui/core/Box'
+import Button from '@material-ui/core/Button'
+
+import ActionButtons from './ActionButtons'
 
 
-const ExperienceDetails = () => {
+const ExperienceDetails = ({ handleSubmit, activeStep, handlePrev, handleBack }) => {
+
     return (
-        <Box>
-            ExperienceDetails
-            {/* <FieldArray
-                name="experience_details"
-                component="input" 
-            /> */}
-        </Box>
+        <form onSubmit={handleSubmit}>
+            <Box>
+                <FieldArray
+                    name="experience_details"
+                    component="input" 
+                />
+            </Box>
+            <ActionButtons
+                activeStep={activeStep}
+                handlePrev={handlePrev}
+                handleBack={handleBack}
+                nextBtnProps={{type: "submit"}}
+            />
+        </form>
     )
 }
 
-export default ExperienceDetails
+export default reduxForm({})(ExperienceDetails)

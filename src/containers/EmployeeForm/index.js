@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { connect } from 'react-redux'
-import { reduxForm, Field } from 'redux-form'
+import { reduxForm, Field, initialize, destroy } from 'redux-form'
 
 import _get from 'lodash/get'
 
@@ -14,7 +14,7 @@ import Step from '@material-ui/core/Step';
 import StepButton from '@material-ui/core/StepButton';
 import StepLabel from '@material-ui/core/StepLabel';
 
-import { getById, clearInitialValues, } from '../../state/employeeForm/actions'
+import { getById, } from '../../state/employeeForm/actions'
 
 import PersonalDetails from './PersonalDetails'
 import BankDetails from './BankDetails'
@@ -30,9 +30,12 @@ const useStyles = makeStyles({
     },    
 })
 
+export const formName = "employee"
+
 const Form = ({
     getById,
-    clearInitialValues,
+    initialize,
+    destroy,
     location,
     match,
     history,
@@ -40,10 +43,14 @@ const Form = ({
     const [activeStep, setActiveStep] = useState(0)
 
     useEffect(() => {
-        const id = _get(match, "params.id")
-        if(id) getById(id)
-
-        return () => clearInitialValues({})
+        const func = async () => {
+            const id = _get(match, "params.id")
+            if(id) {
+                const initialData = await getById(id)
+                initialize(formName, initialData)
+            } 
+        }
+        func()
     }, [])
 
     const classes = useStyles()
@@ -57,7 +64,26 @@ const Form = ({
         "Educational Details"
     ], [])
 
+    const handlePrev = useCallback(() => {
+        setActiveStep(step => step > 0 ? step - 1 : 0)
+    }, [])
 
+    const handleBack = useCallback(() => {
+            history.push("/")
+        }, [])
+
+    const handleNext = useCallback(() => {
+        setActiveStep(step => step < 5 ? step + 1 : 5)
+    }, [])
+
+    const handleSubmit = useCallback((values,) => {
+        console.log("submitting", values)
+    }, [])
+
+    const handleSubmitSuccess = useCallback(() => {
+        destroy(formName)
+        history.push("/")
+    }, [],)
 
     return (
         <Grid container justifyContent="center">
@@ -68,7 +94,7 @@ const Form = ({
 
                     <Stepper 
                         alternativeLabel 
-                        activeStep={0}
+                        activeStep={activeStep}
                     >
                         {steps.map((label, index) => (
                             <Step key={label}>
@@ -80,30 +106,55 @@ const Form = ({
                     </Stepper>
 
 
-                    <PersonalDetails />
-                    <BankDetails />
-                    <ProfessionalDetails />
-                    <CurrentWork />
-                    <ExperienceDetails />
-                    <EducationalDetails />
-
-                    <Box>
-                    <Button 
-                        disabled={activeStep === 0} 
-                        // onClick={handleBack} 
-                        // className={classes.button}
-                    >
-                        Back
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        // onClick={handleNext}
-                        // className={classes.button}
-                    >
-                        Next
-                    </Button>
-                    </Box>
+                    {activeStep === 0 && <PersonalDetails 
+                        form={formName}   
+                        destroyOnUnmount={false}
+                        activeStep={activeStep}   
+                        handlePrev={handlePrev}
+                        handleBack={handleBack}
+                        onSubmit={handleNext}              
+                    />}
+                    {activeStep === 1 && <BankDetails 
+                        form={formName}
+                        destroyOnUnmount={false}
+                        activeStep={activeStep}            
+                        handlePrev={handlePrev}
+                        handleBack={handleBack}
+                        onSubmit={handleNext}                   
+                    />}
+                    {activeStep === 2 && <ProfessionalDetails 
+                        form={formName}
+                        destroyOnUnmount={false}
+                        activeStep={activeStep}            
+                        handlePrev={handlePrev}
+                        handleBack={handleBack}
+                        onSubmit={handleNext}                   
+                    />}
+                    {activeStep === 3 && <CurrentWork 
+                        form={formName}                    
+                        destroyOnUnmount={false}
+                        activeStep={activeStep}            
+                        handlePrev={handlePrev}
+                        handleBack={handleBack}
+                        onSubmit={handleNext}                   
+                    />}
+                    {activeStep === 4 && <ExperienceDetails 
+                        form={formName}                    
+                        destroyOnUnmount={false}
+                        activeStep={activeStep}            
+                        handlePrev={handlePrev}
+                        handleBack={handleBack}
+                        onSubmit={handleNext}                   
+                    />}
+                    {activeStep === 5 && <EducationalDetails 
+                        form={formName}        
+                        destroyOnUnmount={false}
+                        onSubmitSuccess={handleSubmitSuccess}            
+                        activeStep={activeStep}            
+                        handlePrev={handlePrev}
+                        handleBack={handleBack}
+                        onSubmit={handleSubmit}                   
+                    />}
                 </Paper>
             </Grid>
         </Grid>
@@ -119,20 +170,12 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         getById: id => dispatch(getById(id)),
-        clearInitialValues: () => dispatch(clearInitialValues()),
+        initialize: (formName, data) => dispatch(initialize(formName, data)),
+        destroy: formName => dispatch(destroy(formName)),
     }
 }
 
-export default 
-connect(
+export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(
-    reduxForm({
-        form: "parent-employee-form",
-        enableReinitialize: true,
-        keepDirtyOnReinitialize: true,
-    })(
-        Form
-    )
-)
+)(Form)

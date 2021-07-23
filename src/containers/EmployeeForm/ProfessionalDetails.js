@@ -1,18 +1,31 @@
 import React from 'react'
-import { Field } from 'redux-form'
+import { reduxForm, Field } from 'redux-form'
 
+import { makeStyles } from '@material-ui/core/styles'
 import Box from '@material-ui/core/Box'
+import Button from '@material-ui/core/Button'
+
+import ActionButtons from './ActionButtons'
 
 
-const ProfessionalDetails = () => {
+const ProfessionalDetails = ({ handleSubmit, activeStep, handlePrev, handleBack }) => {
+
     return (
-        <Box>
-            <Field
-                name="professional_details.resume"
-                component="input" 
+        <form onSubmit={handleSubmit}>
+            <Box>
+                <Field
+                    name="professional_details.resume"
+                    component="input" 
+                />
+            </Box>
+            <ActionButtons
+                activeStep={activeStep}
+                handlePrev={handlePrev}
+                handleBack={handleBack}
+                nextBtnProps={{type: "submit"}}
             />
-        </Box>
+        </form>
     )
 }
 
-export default ProfessionalDetails
+export default reduxForm({})(ProfessionalDetails)
