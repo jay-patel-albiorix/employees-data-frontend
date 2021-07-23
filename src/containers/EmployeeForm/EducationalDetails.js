@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button'
 import ActionButtons from './ActionButtons'
 
 
-const EducationalDetails = ({ handleSubmit, activeStep, handlePrev, handleBack }) => {
+const EducationalDetails = ({ handleSubmit, activeStep, handlePrev, handleExit }) => {
 
     return (
         <form onSubmit={handleSubmit}>
@@ -21,7 +21,7 @@ const EducationalDetails = ({ handleSubmit, activeStep, handlePrev, handleBack }
             <ActionButtons
                 activeStep={activeStep}
                 handlePrev={handlePrev}
-                handleBack={handleBack}
+                handleExit={handleExit}
                 submitBtnProps={{type: "submit"}}
             />
         </form>

@@ -16,7 +16,7 @@ const useStyles = makeStyles({
     },    
 })
 
-const ActionButtons = ({ activeStep, handlePrev, handleBack, nextBtnProps = {}, submitBtnProps = {} }) => {
+const ActionButtons = ({ activeStep, handlePrev, handleExit, nextBtnProps = {}, submitBtnProps = {} }) => {
     const classes = useStyles()
 
     return (
@@ -39,7 +39,7 @@ const ActionButtons = ({ activeStep, handlePrev, handleBack, nextBtnProps = {}, 
                 </Button>
                 <Button 
                     className={classes.spaced}
-                    onClick={handleBack} 
+                    onClick={handleExit} 
                     color="secondary"
                     variant="outlined"
                 >

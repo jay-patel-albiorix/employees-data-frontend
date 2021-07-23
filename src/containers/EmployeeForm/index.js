@@ -68,9 +68,10 @@ const Form = ({
         setActiveStep(step => step > 0 ? step - 1 : 0)
     }, [])
 
-    const handleBack = useCallback(() => {
-            history.push("/")
-        }, [])
+    const handleExit = useCallback(() => {
+        destroy(formName)
+        history.push("/")
+    }, [])
 
     const handleNext = useCallback(() => {
         setActiveStep(step => step < 5 ? step + 1 : 5)
@@ -111,7 +112,7 @@ const Form = ({
                         destroyOnUnmount={false}
                         activeStep={activeStep}   
                         handlePrev={handlePrev}
-                        handleBack={handleBack}
+                        handleExit={handleExit}
                         onSubmit={handleNext}              
                     />}
                     {activeStep === 1 && <BankDetails 
@@ -119,7 +120,7 @@ const Form = ({
                         destroyOnUnmount={false}
                         activeStep={activeStep}            
                         handlePrev={handlePrev}
-                        handleBack={handleBack}
+                        handleExit={handleExit}
                         onSubmit={handleNext}                   
                     />}
                     {activeStep === 2 && <ProfessionalDetails 
@@ -127,7 +128,7 @@ const Form = ({
                         destroyOnUnmount={false}
                         activeStep={activeStep}            
                         handlePrev={handlePrev}
-                        handleBack={handleBack}
+                        handleExit={handleExit}
                         onSubmit={handleNext}                   
                     />}
                     {activeStep === 3 && <CurrentWork 
@@ -135,7 +136,7 @@ const Form = ({
                         destroyOnUnmount={false}
                         activeStep={activeStep}            
                         handlePrev={handlePrev}
-                        handleBack={handleBack}
+                        handleExit={handleExit}
                         onSubmit={handleNext}                   
                     />}
                     {activeStep === 4 && <ExperienceDetails 
@@ -143,7 +144,7 @@ const Form = ({
                         destroyOnUnmount={false}
                         activeStep={activeStep}            
                         handlePrev={handlePrev}
-                        handleBack={handleBack}
+                        handleExit={handleExit}
                         onSubmit={handleNext}                   
                     />}
                     {activeStep === 5 && <EducationalDetails 
@@ -152,7 +153,7 @@ const Form = ({
                         onSubmitSuccess={handleSubmitSuccess}            
                         activeStep={activeStep}            
                         handlePrev={handlePrev}
-                        handleBack={handleBack}
+                        handleExit={handleExit}
                         onSubmit={handleSubmit}                   
                     />}
                 </Paper>
@@ -163,7 +164,6 @@ const Form = ({
 
 const mapStateToProps = state => {
     return {
-        initialValues: _get(state, "employeeForm.initialValues"),
     }
 }
 
