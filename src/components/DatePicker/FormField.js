@@ -13,7 +13,7 @@ const FormField = ({input: {value, ...input}, meta: {touched, invalid, error}, d
                 error={touched && invalid}
                 helperText={touched && error} 
                 format={dateFormat}
-                value={value || new Date()}
+                value={value || null}
                 {...input}
                 {...props}
             />

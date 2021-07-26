@@ -42,7 +42,6 @@ const PersonalDetails = ({ handleSubmit, activeStep, handlePrev, handleExit }) =
                 <Field
                     name="personal_details.date_of_birth"
                     component={RenderDatePicker}
-                    normalize={value => moment(value).format()}
                     className={classes.spaced}
                     label="Date of Birth"
                     dateFormat="YYYY/MM/DD"
