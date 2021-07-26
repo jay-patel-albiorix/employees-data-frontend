@@ -15,6 +15,7 @@ import StepButton from '@material-ui/core/StepButton';
 import StepLabel from '@material-ui/core/StepLabel';
 
 import { getById, } from '../../state/employeeForm/actions'
+import syncValidate from './syncValidate'
 
 import PersonalDetails from './PersonalDetails'
 import BankDetails from './BankDetails'
@@ -113,7 +114,8 @@ const Form = ({
                         activeStep={activeStep}   
                         handlePrev={handlePrev}
                         handleExit={handleExit}
-                        onSubmit={handleNext}              
+                        validate={syncValidate}       
+                        onSubmit={handleNext}       
                     />}
                     {activeStep === 1 && <BankDetails 
                         form={formName}
@@ -121,6 +123,7 @@ const Form = ({
                         activeStep={activeStep}            
                         handlePrev={handlePrev}
                         handleExit={handleExit}
+                        validate={syncValidate}       
                         onSubmit={handleNext}                   
                     />}
                     {activeStep === 2 && <ProfessionalDetails 
@@ -129,6 +132,7 @@ const Form = ({
                         activeStep={activeStep}            
                         handlePrev={handlePrev}
                         handleExit={handleExit}
+                        validate={syncValidate}       
                         onSubmit={handleNext}                   
                     />}
                     {activeStep === 3 && <CurrentWork 
@@ -137,6 +141,7 @@ const Form = ({
                         activeStep={activeStep}            
                         handlePrev={handlePrev}
                         handleExit={handleExit}
+                        validate={syncValidate}       
                         onSubmit={handleNext}                   
                     />}
                     {activeStep === 4 && <ExperienceDetails 
@@ -145,6 +150,7 @@ const Form = ({
                         activeStep={activeStep}            
                         handlePrev={handlePrev}
                         handleExit={handleExit}
+                        validate={syncValidate}       
                         onSubmit={handleNext}                   
                     />}
                     {activeStep === 5 && <EducationalDetails 
@@ -154,6 +160,7 @@ const Form = ({
                         activeStep={activeStep}            
                         handlePrev={handlePrev}
                         handleExit={handleExit}
+                        validate={syncValidate}       
                         onSubmit={handleSubmit}                   
                     />}
                 </Paper>

@@ -17,10 +17,9 @@ export const syncValidate = (values, ) => {
     if(!_get(values, "personal_details.date_of_birth")) {
         personalDetailsErrors["date_of_birth"] = "Required"
     } 
-
     if(!_get(values, "personal_details.phone") && !_get(values, "personal_details.email")) {
         personalDetailsErrors["phone"] = "Eigher phone or email is required"
-    } else if(_get(values, "personal_details.phone") && !/^\d{10}$/.test(_get(values, "personal_details.phone"))) {
+    } else if(_get(values, "personal_details.phone") && (_get(values, "personal_details.phone.length") !== 10) && !/^\d{10}$/.test(_get(values, "personal_details.phone"))) {
         personalDetailsErrors["phone"] = "Invalid"
     }
     if(!_get(values, "personal_details.email") && !_get(values, "personal_details.phone") ) {
@@ -31,6 +30,29 @@ export const syncValidate = (values, ) => {
 
     if(!_isEmpty(personalDetailsErrors)) {
         errors["personal_details"] = personalDetailsErrors
+    }
+
+
+    const bankDetailsErrors = {}
+    if(!_get(values, "bank_details.account_number")) {
+        bankDetailsErrors["account_number"] = "Required"
+    }
+    if(!_get(values, "bank_details.ifsc")) {
+        bankDetailsErrors["ifsc"] = "Required"
+    }
+    if(!_get(values, "bank_details.pan_card_number")) {
+        bankDetailsErrors["pan_card_number"] = "Required"
+    } else if(_get(values, "bank_details.pan_card_number.length") !== 10 || !/^([A-Z]){5}([0-9]){4}([A-Z]){1}?$/.test(_get(values, "bank_details.pan_card_number"))) {
+        bankDetailsErrors["pan_card_number"] = "Invalid"
+    }
+    if(!_get(values, "bank_details.adhaar_card_number")) {
+        bankDetailsErrors["adhaar_card_number"] = "Required"
+    } else if(_get(values, "bank_details.adhaar_card_number.length") !== 12 || !/^[0-9]*$/.test(_get(values, "bank_details.adhaar_card_number"))) {
+        bankDetailsErrors["adhaar_card_number"] = "Invalid"
+    }
+
+    if(!_isEmpty(bankDetailsErrors)) {
+        errors["bank_details"] = bankDetailsErrors
     }
 
     // console.log("sync errors", errors)

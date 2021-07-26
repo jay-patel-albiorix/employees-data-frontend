@@ -6,7 +6,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import Box from '@material-ui/core/Box'
 import Button from '@material-ui/core/Button'
 
-import syncValidate from './syncValidate'
 import ActionButtons from './ActionButtons'
 import RenderTextField from '../../components/TextField/FormField'
 import RenderDatePicker from '../../components/DatePicker/FormField'
@@ -44,6 +43,7 @@ const PersonalDetails = ({ handleSubmit, activeStep, handlePrev, handleExit }) =
                     component={RenderDatePicker}
                     className={classes.spaced}
                     label="Date of Birth"
+                    emptyLabel="Select"
                     dateFormat="YYYY/MM/DD"
                     disableFuture={true}
                 />
@@ -71,5 +71,4 @@ const PersonalDetails = ({ handleSubmit, activeStep, handlePrev, handleExit }) =
 }
 
 export default reduxForm({
-    validate: syncValidate,
 })(PersonalDetails)
