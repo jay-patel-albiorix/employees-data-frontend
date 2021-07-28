@@ -13,6 +13,8 @@ const useStyles = makeStyles({
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        marginLeft: '5%',
+        marginRight: '5%',
     },
     spaced: {
         margin: 5,
@@ -30,24 +32,28 @@ const BankDetails = ({ handleSubmit, activeStep, handlePrev, handleExit }) => {
                     component={RenderTextField} 
                     className={classes.spaced}
                     label="Account Number"
+                    fullWidth
                 />
                 <Field
                     name="bank_details.ifsc"
                     component={RenderTextField} 
                     className={classes.spaced}
                     label="IFSC"
+                    fullWidth
                 />
                 <Field
                     name="bank_details.pan_card_number"
                     component={RenderTextField} 
                     className={classes.spaced}
                     label="PAN Card Number"
+                    fullWidth
                 />
                 <Field
                     name="bank_details.adhaar_card_number"
                     component={RenderTextField} 
                     className={classes.spaced}
                     label="Adhaar Card Number"
+                    fullWidth
                 />
             </Box>
             <ActionButtons

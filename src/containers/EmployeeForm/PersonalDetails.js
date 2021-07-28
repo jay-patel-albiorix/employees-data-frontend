@@ -15,6 +15,8 @@ const useStyles = makeStyles({
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        marginLeft: '5%',
+        marginRight: '5%',
     },
     spaced: {
         margin: 5,
@@ -31,12 +33,14 @@ const PersonalDetails = ({ handleSubmit, activeStep, handlePrev, handleExit }) =
                     component={RenderTextField}
                     className={classes.spaced}
                     label="First Name"
+                    fullWidth
                 />
                 <Field
                     name="personal_details.last_name"
                     component={RenderTextField}
                     className={classes.spaced}
                     label="Last Name"
+                    fullWidth
                 />
                 <Field
                     name="personal_details.date_of_birth"
@@ -46,18 +50,21 @@ const PersonalDetails = ({ handleSubmit, activeStep, handlePrev, handleExit }) =
                     dateFormat="yyyy/MM/DD"
                     disableFuture={true}
                     maxDate={new Date}
+                    fullWidth
                 />
                 <Field
                     name="personal_details.phone"
                     component={RenderTextField}
                     className={classes.spaced}
                     label="Phone"
+                    fullWidth
                 />
                 <Field
                     name="personal_details.email"
                     component={RenderTextField}
                     className={classes.spaced}
                     label="Email"
+                    fullWidth
                 />
             </Box>
             <ActionButtons

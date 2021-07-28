@@ -16,18 +16,18 @@ const useStyles = makeStyles({
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        marginLeft: '5%',
+        marginRight: '5%',
     },
     spaced: {
         margin: 5,
     },
-    fixedWidth: {
-        width: 201,
+    fullWidth: {
+        width: '100%',
     },
-    grooupContainer: {
-        width: 201
-    },
-    groupedItem: {
-        width: '45%'
+    groupContainer: {
+        width: '100%',
+        display: 'flex',
     },
     formLabel: {
         textAlign: "left",
@@ -40,25 +40,27 @@ const ProfessionalDetails = ({ handleSubmit, activeStep, handlePrev, handleExit 
     return (
         <form onSubmit={handleSubmit}>
             <Box className={classes.fieldContainer}>
-                <Box className={classes.grooupContainer}>
-                    <FormLabel component="legend" className={classes.formLabel}>Experience</FormLabel>
+                <FormLabel component="legend" className={classes.formLabel}>Experience</FormLabel>
+                <Box className={classes.groupContainer}>
                     <Field 
                         name="professional_details.experience.years"
                         component={RenderTextField}
-                        className={`${classes.spaced} ${classes.groupedItem}`}
+                        className={classes.spaced}
                         type="number"
                         label="Years"
                         InputProps={{ inputProps: { min: 0} }}
                         normalize={value => value >= 0 ? value : 0 }
+                        fullWidth
                     />
                     <Field 
                         name="professional_details.experience.months"
                         component={RenderTextField}
-                        className={`${classes.spaced} ${classes.groupedItem}`}
+                        className={classes.spaced}
                         type="number"
                         label="Months"
                         InputProps={{ inputProps: { min: 0, max: 11 } }}
                         normalize={value => value < 0 ? 0 : ( value > 11 ? 11 : value )}
+                        fullWidth
                     />
                 </Box>
                 <Field
@@ -66,11 +68,12 @@ const ProfessionalDetails = ({ handleSubmit, activeStep, handlePrev, handleExit 
                     component={RenderTextField}
                     className={classes.spaced}
                     label="Resume"
+                    fullWidth
                 />
                 <Field 
                     name="professional_details.skills"
                     component={RenderAutoComplete}
-                    className={`${classes.spaced} ${classes.fixedWidth}`}
+                    className={`${classes.spaced} ${classes.fullWidth}`}
                     defaultValue={[]}
                     autoCompleteProps={{
                         options: ["React Js", "Angular JS", "Vue JS"],
@@ -78,7 +81,8 @@ const ProfessionalDetails = ({ handleSubmit, activeStep, handlePrev, handleExit 
                         freeSolo: true,
                     }}
                     textFieldsProps={{
-                        label: "Skills"
+                        label: "Skills",
+                        fullWidth: true
                     }}
                 />
             </Box>
