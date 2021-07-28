@@ -55,6 +55,24 @@ export const syncValidate = (values, ) => {
         errors["bank_details"] = bankDetailsErrors
     }
 
+
+    const professionalDetailsErrors = {}
+    const experienceErrors = {}
+    if((_get(values, "professional_details.experience.years", null) !== null) && (_get(values, "professional_details.experience.years") < 0)) {
+        experienceErrors["years"] = "Invalid"
+    }
+    if((_get(values, "professional_details.experience.months", null) !== null) && (_get(values, "professional_details.experience.months") < 0 || _get(values, "professional_details.experience.months") >= 12)) {
+        experienceErrors["months"] = "Invalid"
+    }
+    if(!_isEmpty(experienceErrors)) {
+        professionalDetailsErrors["experience"] = experienceErrors
+    }
+
+    if(!_isEmpty(professionalDetailsErrors)) {
+        errors["professional_details"] = professionalDetailsErrors
+    }
+
+    
     // console.log("sync errors", errors)
     return errors
 }
