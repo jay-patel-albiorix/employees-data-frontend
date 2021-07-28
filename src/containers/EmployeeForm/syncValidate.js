@@ -72,7 +72,22 @@ export const syncValidate = (values, ) => {
         errors["professional_details"] = professionalDetailsErrors
     }
 
-    
+
+    const currentWorkErrors = {}
+    if(!_get(values, "current_work.company")) {
+        currentWorkErrors["company"] = "Required"
+    }
+    if(!_get(values, "current_work.designation")) {
+        currentWorkErrors["designation"] = "Required"
+    }
+    if(!_get(values, "current_work.department")) {
+        currentWorkErrors["department"] = "Required"
+    }
+
+    if(!_isEmpty(currentWorkErrors)) {
+        errors["current_work"] = currentWorkErrors
+    }
+
     // console.log("sync errors", errors)
     return errors
 }

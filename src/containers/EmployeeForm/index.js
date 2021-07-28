@@ -49,7 +49,16 @@ const Form = ({
             if(id) {
                 const initialData = await getById(id)
                 initialize(formName, initialData)
-            } 
+            } else {
+                initialize(
+                    formName,
+                    {
+                        current_work: {
+                            company: "Albiorix Technologies Private Limited"
+                        }
+                    }
+                )
+            }
         }
         func()
     }, [])
