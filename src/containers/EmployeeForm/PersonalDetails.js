@@ -43,9 +43,9 @@ const PersonalDetails = ({ handleSubmit, activeStep, handlePrev, handleExit }) =
                     component={RenderDatePicker}
                     className={classes.spaced}
                     label="Date of Birth"
-                    emptyLabel="Select"
-                    dateFormat="YYYY/MM/DD"
+                    dateFormat="yyyy/MM/DD"
                     disableFuture={true}
+                    maxDate={new Date}
                 />
                 <Field
                     name="personal_details.phone"

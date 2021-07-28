@@ -12,7 +12,7 @@ const FormField = ({input: {value, ...input}, meta: {touched, invalid, error}, d
             <DatePicker 
                 error={touched && invalid}
                 helperText={touched && error} 
-                format={dateFormat}
+                format={dateFormat || "yyyy/MM/DD"}
                 value={value || null}
                 {...input}
                 {...props}
