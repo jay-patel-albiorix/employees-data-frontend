@@ -23,7 +23,7 @@ const useStyles = makeStyles({
     }
 })
 
-const PersonalDetails = ({ handleSubmit, activeStep, handlePrev, handleExit }) => {
+const PersonalDetails = ({ handleSubmit, activeStep, handleRemove, handlePrev, handleExit }) => {
     const classes = useStyles()
     return (
         <form onSubmit={handleSubmit}>
@@ -69,6 +69,7 @@ const PersonalDetails = ({ handleSubmit, activeStep, handlePrev, handleExit }) =
             </Box>
             <ActionButtons
                 activeStep={activeStep}
+                handleRemove={handleRemove}
                 handlePrev={handlePrev}
                 handleExit={handleExit}
                 nextBtnProps={{type: "submit"}}

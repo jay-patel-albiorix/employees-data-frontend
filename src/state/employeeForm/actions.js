@@ -28,3 +28,11 @@ export const submit = (id, values) => async dispatch => {
         Promise.reject()
     }
 }
+
+export const remove = id => async dispatch => {
+    try {
+        return api.employee.delete(id)
+    } catch(err) {
+        console.log("removing employee failed", err)
+    }
+} 

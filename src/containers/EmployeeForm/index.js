@@ -9,12 +9,17 @@ import Box from '@material-ui/core/Box'
 import Button from '@material-ui/core/Button'
 import Paper from '@material-ui/core/Paper'
 import Grid from '@material-ui/core/Grid'
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepButton from '@material-ui/core/StepButton';
-import StepLabel from '@material-ui/core/StepLabel';
+import Stepper from '@material-ui/core/Stepper'
+import Step from '@material-ui/core/Step'
+import StepButton from '@material-ui/core/StepButton'
+import StepLabel from '@material-ui/core/StepLabel'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
 
-import { getById, submit } from '../../state/employeeForm/actions'
+import { getById, submit, remove } from '../../state/employeeForm/actions'
 import syncValidate from './syncValidate'
 
 import PersonalDetails from './PersonalDetails'
@@ -38,11 +43,13 @@ const Form = ({
     initialize,
     destroy,
     submit,
+    remove,
     location,
     match,
     history,
 }) => {
     const [activeStep, setActiveStep] = useState(0)
+    const [removeAlert, setRemoveAlert] = useState(false)
 
     useEffect(() => {
         const func = async () => {
@@ -75,6 +82,12 @@ const Form = ({
         "Educational Details"
     ], [])
 
+    const handleRemove = useCallback(() => {
+        const id = _get(match, "params.id")
+        console.log("removing", id)
+        setRemoveAlert(true)
+    }, [])
+
     const handlePrev = useCallback(() => {
         setActiveStep(step => step > 0 ? step - 1 : 0)
     }, [])
@@ -100,7 +113,44 @@ const Form = ({
         history.push("/")
     }, [],)
 
+    const handleCloseRemoveAlert = useCallback(() => setRemoveAlert(false))
+
+    const handleConfirmRemoveAlert = useCallback(async () => {
+        const id = _get(match, "params.id")
+        const { data } = await remove(id)
+        console.log("removed employee", data)
+        if(data) history.replace("/")
+    })
+
     return (
+        <>
+        <Dialog
+            open={removeAlert}
+            onClose={handleCloseRemoveAlert}aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle>Warning</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    Are you surely removing this employee?
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    color="primary"
+                    onClick={handleCloseRemoveAlert}
+                >
+                    No
+                </Button>
+                <Button
+                    color="secondary"
+                    variant="contained"
+                    onClick={handleConfirmRemoveAlert}
+                >
+                    Yes
+                </Button>
+            </DialogActions>
+        </Dialog>
         <Grid container justifyContent="center">
             <Grid item sm={12} lg={9} xl={6}>
                 <Paper className={classes.spaced} elevation={3}>
@@ -122,6 +172,7 @@ const Form = ({
                         form={formName}   
                         destroyOnUnmount={false}
                         activeStep={activeStep}   
+                        handleRemove={handleRemove}
                         handlePrev={handlePrev}
                         handleExit={handleExit}
                         validate={syncValidate}       
@@ -131,6 +182,7 @@ const Form = ({
                         form={formName}
                         destroyOnUnmount={false}
                         activeStep={activeStep}            
+                        handleRemove={handleRemove}
                         handlePrev={handlePrev}
                         handleExit={handleExit}
                         validate={syncValidate}       
@@ -140,6 +192,7 @@ const Form = ({
                         form={formName}
                         destroyOnUnmount={false}
                         activeStep={activeStep}            
+                        handleRemove={handleRemove}
                         handlePrev={handlePrev}
                         handleExit={handleExit}
                         validate={syncValidate}       
@@ -149,6 +202,7 @@ const Form = ({
                         form={formName}                    
                         destroyOnUnmount={false}
                         activeStep={activeStep}            
+                        handleRemove={handleRemove}
                         handlePrev={handlePrev}
                         handleExit={handleExit}
                         validate={syncValidate}       
@@ -158,6 +212,7 @@ const Form = ({
                         form={formName}                    
                         destroyOnUnmount={false}
                         activeStep={activeStep}            
+                        handleRemove={handleRemove}
                         handlePrev={handlePrev}
                         handleExit={handleExit}
                         validate={syncValidate}       
@@ -167,6 +222,7 @@ const Form = ({
                         form={formName}        
                         destroyOnUnmount={false}
                         onSubmitSuccess={handleSubmitSuccess}            
+                        handleRemove={handleRemove}
                         activeStep={activeStep}            
                         handlePrev={handlePrev}
                         handleExit={handleExit}
@@ -176,6 +232,7 @@ const Form = ({
                 </Paper>
             </Grid>
         </Grid>
+        </>
     )
 }
 
@@ -190,6 +247,7 @@ const mapDispatchToProps = dispatch => {
         initialize: (formName, data) => dispatch(initialize(formName, data)),
         destroy: formName => dispatch(destroy(formName)),
         submit: (id, values) => dispatch(submit(id, values)),
+        remove: id => dispatch(remove(id)),
     }
 }
 

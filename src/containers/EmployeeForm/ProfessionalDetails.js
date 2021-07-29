@@ -34,7 +34,7 @@ const useStyles = makeStyles({
     }
 })
 
-const ProfessionalDetails = ({ handleSubmit, activeStep, handlePrev, handleExit }) => {
+const ProfessionalDetails = ({ handleSubmit, activeStep, handleRemove, handlePrev, handleExit }) => {
     const classes = useStyles()
 
     return (
@@ -88,6 +88,7 @@ const ProfessionalDetails = ({ handleSubmit, activeStep, handlePrev, handleExit 
             </Box>
             <ActionButtons
                 activeStep={activeStep}
+                handleRemove={handleRemove}
                 handlePrev={handlePrev}
                 handleExit={handleExit}
                 nextBtnProps={{type: "submit"}}

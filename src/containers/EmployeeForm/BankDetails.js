@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     }
 })
 
-const BankDetails = ({ handleSubmit, activeStep, handlePrev, handleExit }) => {
+const BankDetails = ({ handleSubmit, activeStep, handleRemove, handlePrev, handleExit }) => {
     const classes = useStyles()
 
     return (
@@ -58,6 +58,7 @@ const BankDetails = ({ handleSubmit, activeStep, handlePrev, handleExit }) => {
             </Box>
             <ActionButtons
                 activeStep={activeStep}
+                handleRemove={handleRemove}
                 handlePrev={handlePrev}
                 handleExit={handleExit}
                 nextBtnProps={{type: "submit"}}
