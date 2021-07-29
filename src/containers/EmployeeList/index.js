@@ -194,7 +194,7 @@ const List = ({
 const mapStateToProps = state => {
     return {
         data: _get(state, "employeeList.data"),
-        count: _get(state, "employeeList.meta.count"),
+        count: _get(state, "employeeList.meta.count", 0),
         currentPageIndex: _get(state, "employeeList.currentPageIndex"),
         rowsPerPage: _get(state, "employeeList.rowsPerPage"),
         search: _get(state, "employeeList.search"),

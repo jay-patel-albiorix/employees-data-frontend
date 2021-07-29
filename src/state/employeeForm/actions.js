@@ -15,3 +15,16 @@ export const getById = id => async dispatch => {
         console.log("get employee by id failed", err)
     }
 } 
+
+export const submit = (id, values) => async dispatch => {
+    try {
+        if(id) {
+            return api.employee.put(id, values)
+        } else {
+            return api.employee.post(values)
+        }
+    } catch(err) {
+        console.log("submitting employee form failes", err)
+        Promise.reject()
+    }
+}

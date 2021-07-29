@@ -14,7 +14,7 @@ import Step from '@material-ui/core/Step';
 import StepButton from '@material-ui/core/StepButton';
 import StepLabel from '@material-ui/core/StepLabel';
 
-import { getById, } from '../../state/employeeForm/actions'
+import { getById, submit } from '../../state/employeeForm/actions'
 import syncValidate from './syncValidate'
 
 import PersonalDetails from './PersonalDetails'
@@ -37,6 +37,7 @@ const Form = ({
     getById,
     initialize,
     destroy,
+    submit,
     location,
     match,
     history,
@@ -89,6 +90,9 @@ const Form = ({
 
     const handleSubmit = useCallback((values,) => {
         console.log("submitting", values)
+
+        const id = _get(match, "params.id")
+        return submit(id, values)
     }, [])
 
     const handleSubmitSuccess = useCallback(() => {
@@ -100,9 +104,6 @@ const Form = ({
         <Grid container justifyContent="center">
             <Grid item sm={12} lg={9} xl={6}>
                 <Paper className={classes.spaced} elevation={3}>
-                    Employee Form
-                    id: {_get(match, "params.id", "new")}
-
                     <Stepper 
                         alternativeLabel 
                         activeStep={activeStep}
@@ -188,6 +189,7 @@ const mapDispatchToProps = dispatch => {
         getById: id => dispatch(getById(id)),
         initialize: (formName, data) => dispatch(initialize(formName, data)),
         destroy: formName => dispatch(destroy(formName)),
+        submit: (id, values) => dispatch(submit(id, values)),
     }
 }
 

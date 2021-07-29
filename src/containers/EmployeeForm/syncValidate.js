@@ -85,6 +85,9 @@ export const syncValidate = (values, ) => {
     if(!_get(values, "current_work.department")) {
         currentWorkErrors["department"] = "Required"
     }
+    if(!_get(values, "current_work.from")) {
+        currentWorkErrors["from"] = "Required"
+    }
 
     if(!_isEmpty(currentWorkErrors)) {
         errors["current_work"] = currentWorkErrors
