@@ -1,5 +1,7 @@
 import _get from 'lodash/get'
 import _isEmpty from 'lodash/isEmpty'
+import _forEach from 'lodash/forEach'
+
 import { isDate } from 'moment'
 
 export const syncValidate = (values, ) => {
@@ -86,6 +88,28 @@ export const syncValidate = (values, ) => {
 
     if(!_isEmpty(currentWorkErrors)) {
         errors["current_work"] = currentWorkErrors
+    }
+
+    if(_get(values, "past_works.length")) {
+        const pastWorksArrErrors = []
+        _forEach(
+            _get(values, "past_works"),
+            (pastWork, index) => {
+                const pastWorkError = {}
+                if(!_get(pastWork, "company")) {
+                    pastWorkError["company"] = "Required"
+                }
+
+                if(new Date(_get(pastWork, "from")) > new Date(_get(pastWork, "to"))) {
+                    pastWorkError["from"] = "Bad value"
+                    pastWorkError["to"] = "Bad value"
+                }
+
+                pastWorksArrErrors[index] = pastWorkError
+            }
+        )
+
+        errors["past_works"] = pastWorksArrErrors
     }
 
     // console.log("sync errors", errors)

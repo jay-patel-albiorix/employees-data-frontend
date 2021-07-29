@@ -40,7 +40,7 @@ const ProfessionalDetails = ({ handleSubmit, activeStep, handlePrev, handleExit 
     return (
         <form onSubmit={handleSubmit}>
             <Box className={classes.fieldContainer}>
-                <FormLabel component="legend" className={classes.formLabel}>Experience</FormLabel>
+                <FormLabel component="legend" className={classes.formLabel}>Total Experience</FormLabel>
                 <Box className={classes.groupContainer}>
                     <Field 
                         name="professional_details.experience.years"
