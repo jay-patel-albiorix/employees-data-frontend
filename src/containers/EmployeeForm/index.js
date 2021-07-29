@@ -20,6 +20,7 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 
 import { getById, submit, remove } from '../../state/employeeForm/actions'
+import { setGlobalAlert } from '../../state/globalAlert/actions'
 import syncValidate from './syncValidate'
 
 import PersonalDetails from './PersonalDetails'
@@ -44,6 +45,7 @@ const Form = ({
     destroy,
     submit,
     remove,
+    setGlobalAlert,
     location,
     match,
     history,
@@ -102,16 +104,33 @@ const Form = ({
     }, [])
 
     const handleSubmit = useCallback((values,) => {
-        console.log("submitting", values)
+        try {
+            console.log("submitting", values)
 
-        const id = _get(match, "params.id")
-        return submit(id, values)
+            const id = _get(match, "params.id")
+            return submit(id, values)
+        } catch(err) {
+            console.log("handleSubmit failed", err)
+            return Promise.reject(err)
+        }
     }, [])
 
     const handleSubmitSuccess = useCallback(() => {
         destroy(formName)
+        setGlobalAlert(
+            "success",
+            "Saved successfully"
+        )
         history.push("/")
     }, [],)
+
+    const handleSubmitFail = useCallback((errors) => {
+        console.log("submit failed", errors)
+        setGlobalAlert(
+            "error",
+            JSON.stringify(errors)
+        )
+    }, [])
 
     const handleCloseRemoveAlert = useCallback(() => setRemoveAlert(false))
 
@@ -119,7 +138,13 @@ const Form = ({
         const id = _get(match, "params.id")
         const { data } = await remove(id)
         console.log("removed employee", data)
-        if(data) history.replace("/")
+        if(data) {
+            setGlobalAlert(
+                "success",
+                "Saved successfully"
+            )
+            history.replace("/")
+        }
     })
 
     return (
@@ -227,7 +252,8 @@ const Form = ({
                         handlePrev={handlePrev}
                         handleExit={handleExit}
                         validate={syncValidate}       
-                        onSubmit={handleSubmit}                   
+                        onSubmit={handleSubmit}     
+                        onSubmitFail={handleSubmitFail}              
                     />}
                 </Paper>
             </Grid>
@@ -248,6 +274,7 @@ const mapDispatchToProps = dispatch => {
         destroy: formName => dispatch(destroy(formName)),
         submit: (id, values) => dispatch(submit(id, values)),
         remove: id => dispatch(remove(id)),
+        setGlobalAlert: (severity, message) => dispatch(setGlobalAlert(severity, message)),
     }
 }
 

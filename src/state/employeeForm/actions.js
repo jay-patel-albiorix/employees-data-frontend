@@ -24,8 +24,8 @@ export const submit = (id, values) => async dispatch => {
             return api.employee.post(values)
         }
     } catch(err) {
-        console.log("submitting employee form failes", err)
-        Promise.reject()
+        console.log("submitting employee form failed", err)
+        Promise.reject(err)
     }
 }
 
