@@ -112,6 +112,25 @@ export const syncValidate = (values, ) => {
         errors["past_works"] = pastWorksArrErrors
     }
 
+
+    if(_get(values, "educational_details.length")) {
+        const educationalDetailsArrErrors = []
+        _forEach(
+            _get(values, "educational_details"),
+            (education, index) => {
+                const educationError = {}
+                if(!_get(education, "course")) {
+                    educationError["course"] = "Required"
+                }
+                if(!_get(education, "university")) {
+                    educationError["university"] = "Required"
+                }
+                educationalDetailsArrErrors[index] = educationError            
+            }
+        )
+        errors["educational_details"] = educationalDetailsArrErrors
+    }
+
     // console.log("sync errors", errors)
     return errors
 }
