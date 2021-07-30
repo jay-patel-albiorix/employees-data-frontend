@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { reduxForm, Field } from 'redux-form'
 
 import { makeStyles } from '@material-ui/core/styles'
@@ -35,6 +35,8 @@ const useStyles = makeStyles({
 
 const ProfessionalDetails = ({ handleSubmit, activeStep, handleRemove, handlePrev, handleExit }) => {
     const classes = useStyles()
+
+    const skills = useMemo(() => ["Java", "Javascript", "Python", "React Js", "Angular JS", "Vue JS", "Node JS", "express", "Django", "Spring boot", "jHipstor", "MongoDB", "MySQL", "PostgreSQL"], [])
 
     return (
         <form onSubmit={handleSubmit}>
@@ -75,12 +77,13 @@ const ProfessionalDetails = ({ handleSubmit, activeStep, handleRemove, handlePre
                     className={`${classes.spaced} ${classes.fullWidth}`}
                     defaultValue={[]}
                     autoCompleteProps={{
-                        options: ["React Js", "Angular JS", "Vue JS"],
+                        options: skills,
                         multiple: true, 
                         freeSolo: true,
                     }}
                     textFieldsProps={{
                         label: "Skills",
+                        onKeyDown: e => e.preventDefault(),
                         fullWidth: true
                     }}
                 />
