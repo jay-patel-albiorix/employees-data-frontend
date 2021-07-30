@@ -1,4 +1,3 @@
-import _get from 'lodash/get'
 import _map from 'lodash/map'
 import _split from 'lodash/split'
 import _trim from 'lodash/trim'

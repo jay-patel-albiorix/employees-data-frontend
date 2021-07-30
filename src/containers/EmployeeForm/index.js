@@ -1,17 +1,15 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { connect } from 'react-redux'
-import { reduxForm, Field, initialize, destroy } from 'redux-form'
+import { initialize, destroy, SubmissionError } from 'redux-form'
 
 import _get from 'lodash/get'
 
 import { makeStyles } from '@material-ui/core/styles'
-import Box from '@material-ui/core/Box'
 import Button from '@material-ui/core/Button'
 import Paper from '@material-ui/core/Paper'
 import Grid from '@material-ui/core/Grid'
 import Stepper from '@material-ui/core/Stepper'
 import Step from '@material-ui/core/Step'
-import StepButton from '@material-ui/core/StepButton'
 import StepLabel from '@material-ui/core/StepLabel'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -71,6 +69,7 @@ const Form = ({
             }
         }
         func()
+        // eslint-disable-next-line
     }, [])
 
     const classes = useStyles()
@@ -88,6 +87,7 @@ const Form = ({
         const id = _get(match, "params.id")
         console.log("removing", id)
         setRemoveAlert(true)
+        // eslint-disable-next-line
     }, [])
 
     const handlePrev = useCallback(() => {
@@ -97,42 +97,50 @@ const Form = ({
     const handleExit = useCallback(() => {
         destroy(formName)
         history.push("/")
+        // eslint-disable-next-line
     }, [])
 
     const handleNext = useCallback(() => {
         setActiveStep(step => step < 5 ? step + 1 : 5)
     }, [])
 
-    const handleSubmit = useCallback((values,) => {
+    const handleSubmit = useCallback(async (values,) => {
         try {
             console.log("submitting", values)
 
             const id = _get(match, "params.id")
-            return submit(id, values)
-        } catch(err) {
-            console.log("handleSubmit failed", err)
-            return Promise.reject(err)
+            const submitResponse = await submit(id, values)
+            console.log("handleSubmit response", submitResponse)
+            return submitResponse
+        } catch({ message, response }) {
+            console.log("handleSubmit catch", message, response, _get(response, "data.message"))
+            // return Promise.reject(_get(response, "data.message"))
+            throw new SubmissionError(_get(response, "data"))
         }
+        // eslint-disable-next-line
     }, [])
 
     const handleSubmitSuccess = useCallback(() => {
+        console.log("handleSubmitSuccess")
         destroy(formName)
         setGlobalAlert(
             "success",
             "Saved successfully"
         )
         history.push("/")
+        // eslint-disable-next-line
     }, [],)
 
     const handleSubmitFail = useCallback((errors) => {
-        console.log("submit failed", errors)
+        console.log("handleSubmitFail", errors)
         setGlobalAlert(
             "error",
-            JSON.stringify(errors)
+            _get(errors, "message"),
         )
+        // eslint-disable-next-line
     }, [])
 
-    const handleCloseRemoveAlert = useCallback(() => setRemoveAlert(false))
+    const handleCloseRemoveAlert = useCallback(() => setRemoveAlert(false), [])
 
     const handleConfirmRemoveAlert = useCallback(async () => {
         const id = _get(match, "params.id")
@@ -145,7 +153,8 @@ const Form = ({
             )
             history.replace("/")
         }
-    })
+        // eslint-disable-next-line
+    }, [])
 
     return (
         <>

@@ -8,7 +8,7 @@ const initialState = {
     message: "",
 }
 
-export default (state = initialState, {type, payload}) => {
+const reducer = (state = initialState, {type, payload}) => {
     switch(type) {
         case SET_GLOBAL_ALERT:
             return {
@@ -28,3 +28,5 @@ export default (state = initialState, {type, payload}) => {
             return state
     }
 }
+
+export default reducer

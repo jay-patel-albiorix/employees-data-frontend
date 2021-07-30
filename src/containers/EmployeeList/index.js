@@ -6,15 +6,10 @@ import _get from 'lodash/get'
 import _ceil from 'lodash/ceil'
 
 import { makeStyles } from '@material-ui/core/styles'
-import CssBaseline from '@material-ui/core/CssBaseline'
 import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper'
 import Grid from '@material-ui/core/Grid'
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container'
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import MaUTable from '@material-ui/core/Table'
@@ -88,20 +83,24 @@ const List = ({
 
   const handlePageChange = useCallback((event, newPageIndex) => {
     changePage(newPageIndex)
+    // eslint-disable-next-line
   }, [])
 
   const handleRowsPerPageChange = useCallback((event) => {
     changeRowPerPage(_get(event, "target.value"))
+    // eslint-disable-next-line
   }, [])
 
   const handleSearch = useCallback((event) => {
-    console.log("search", _get(event, "target.value"))
     changeFilter(_get(event, "target.value"))
+    // eslint-disable-next-line
   }, [])
 
+  // eslint-disable-next-line
   const handleAddNewRoute = useCallback(() => history.push("/employee-form"), [])
 
-  const handleEditRoute = useCallback(id => history.push(`/employee-form/${id}`))
+  // eslint-disable-next-line
+  const handleEditRoute = useCallback(id => history.push(`/employee-form/${id}`), [])
 
   const { 
     getTableProps, 

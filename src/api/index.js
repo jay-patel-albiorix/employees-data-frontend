@@ -2,7 +2,7 @@ import axios from 'axios'
 
 export const server = "http://localhost:8080"
 
-export default {
+const api = {
     employee: {
         get: query => axios.get(`${server}/employee/list`, query),
         getById: id => axios.get(`${server}/employee/one/${id}`),
@@ -11,3 +11,5 @@ export default {
         delete: id => axios.delete(`${server}/employee/delete/${id}`),
     }
 }
+
+export default api

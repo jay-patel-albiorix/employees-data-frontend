@@ -2,8 +2,6 @@ import _get from 'lodash/get'
 import _isEmpty from 'lodash/isEmpty'
 import _forEach from 'lodash/forEach'
 
-import { isDate } from 'moment'
-
 export const syncValidate = (values, ) => {
     const errors = {}
 

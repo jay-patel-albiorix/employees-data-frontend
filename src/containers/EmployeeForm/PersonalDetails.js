@@ -1,10 +1,8 @@
 import React from 'react'
 import { reduxForm, Field } from 'redux-form'
-import moment from 'moment'
 
 import { makeStyles } from '@material-ui/core/styles'
 import Box from '@material-ui/core/Box'
-import Button from '@material-ui/core/Button'
 
 import ActionButtons from './ActionButtons'
 import RenderTextField from '../../components/TextField/FormField'
@@ -49,7 +47,7 @@ const PersonalDetails = ({ handleSubmit, activeStep, handleRemove, handlePrev, h
                     label="Date of Birth"
                     dateFormat="yyyy/MM/DD"
                     disableFuture={true}
-                    maxDate={new Date}
+                    maxDate={new Date()}
                     fullWidth
                 />
                 <Field
