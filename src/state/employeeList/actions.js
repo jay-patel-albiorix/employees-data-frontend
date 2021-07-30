@@ -12,6 +12,8 @@ import {
 
 import api from '../../api'
 
+import { setGlobalAlert } from '../globalAlert/actions'
+
 export const getListData = (skip, limit, search, keys) => async dispatch => {
     try {
         const split = _split(_trim(search), / +/)
@@ -98,6 +100,10 @@ export const getListData = (skip, limit, search, keys) => async dispatch => {
 
     } catch(err) {
         console.log("getting list failed", err)
+        dispatch(setGlobalAlert(
+            "error",
+            "Getting list failed"
+        ))
     }
 }
 

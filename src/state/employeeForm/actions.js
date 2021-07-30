@@ -3,6 +3,8 @@ import {
 
 import api from '../../api'
 
+import { setGlobalAlert } from '../globalAlert/actions'
+
 export const getById = id => async dispatch => {
     try {
         if(!id) throw new Error("id is required to get document")
@@ -13,6 +15,10 @@ export const getById = id => async dispatch => {
         return data
     } catch(err) {
         console.log("get employee by id failed", err)
+        dispatch(setGlobalAlert(
+            "error",
+            "Getting employee doc failed"
+        ))
     }
 } 
 
