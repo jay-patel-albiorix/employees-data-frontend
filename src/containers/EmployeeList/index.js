@@ -126,7 +126,7 @@ const List = ({
       <Grid item sm={12} lg={9} xl={6}>
         <Paper className={classes.spaced} elevation={3}>
           <Typography variant="h5" component="h1">
-            Albiorix Technologies Team
+            Albiorix Technology Team
           </Typography>
           <Box className={classes.actionHeader}>
             <TextField className={classes.spaced} label="Search" variant="outlined"
