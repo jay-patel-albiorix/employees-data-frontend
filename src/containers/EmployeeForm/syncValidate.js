@@ -8,6 +8,9 @@ export const syncValidate = (values, ) => {
     // errors["_error"] = "Global Error"
 
     const personalDetailsErrors = {}
+    if(_get(values, "personal_details.profile_pic") === "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif") {
+        personalDetailsErrors["profile_pic"] = "Loading"
+    }
     if(!_get(values, "personal_details.first_name")) {
         personalDetailsErrors["first_name"] = "Required"
     }
@@ -57,6 +60,9 @@ export const syncValidate = (values, ) => {
 
 
     const professionalDetailsErrors = {}
+    if(_get(values, "professional_details.resume") === "#") {
+        professionalDetailsErrors["resume"] = "Loading"
+    }
     const experienceErrors = {}
     if((_get(values, "professional_details.experience.years", null) !== null) && (_get(values, "professional_details.experience.years") < 0)) {
         experienceErrors["years"] = "Invalid"

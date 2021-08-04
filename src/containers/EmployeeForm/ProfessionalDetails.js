@@ -1,5 +1,8 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useCallback } from 'react'
+import { connect } from 'react-redux'
 import { reduxForm, Field } from 'redux-form'
+
+import _get from 'lodash/get'
 
 import { makeStyles } from '@material-ui/core/styles'
 import Box from '@material-ui/core/Box'
@@ -8,6 +11,8 @@ import FormLabel from '@material-ui/core/FormLabel';
 import ActionButtons from './ActionButtons'
 import RenderTextField from '../../components/TextField/FormField'
 import RenderAutoComplete from '../../components/AutoComplete/FormField'
+import RenderLink from '../../components/Link/FormField'
+import { upload } from '../../state/employeeForm/actions'
 
 
 const useStyles = makeStyles({
@@ -30,17 +35,65 @@ const useStyles = makeStyles({
     },
     formLabel: {
         textAlign: "left",
+        width: "100%",
     }
 })
 
-const ProfessionalDetails = ({ handleSubmit, activeStep, handleRemove, handlePrev, handleExit }) => {
+const ProfessionalDetails = ({ 
+    handleSubmit, 
+    submitFailed, 
+    activeStep, 
+    handleRemove, 
+    handlePrev, 
+    handleExit,
+    upload, 
+}) => {
     const classes = useStyles()
 
     const skills = useMemo(() => ["Java", "Javascript", "Python", "React Js", "Angular JS", "Vue JS", "Node JS", "express", "Django", "Spring boot", "jHipstor", "MongoDB", "MySQL", "PostgreSQL"], [])
 
+    const handleUpload = useCallback(async (e) => {
+        try {
+            console.log("handleUpload", "\nevent", e)
+            if (_get(e, "target.files.length") === 1) {
+
+                const uploadFormData = new FormData()
+                uploadFormData.append("upload", _get(e, "target.files[0]"))
+    
+                const { data: { url } } = await upload(uploadFormData)
+                console.log("resume", url)
+                return url
+            }
+        } catch(err) {
+            console.log(err)
+        }
+
+        // eslint-disable-next-line
+    }, [])
+
     return (
         <form onSubmit={handleSubmit}>
             <Box className={classes.fieldContainer}>
+            <Field 
+                    name="professional_details.resume"
+                    component={RenderLink}
+                    upload={handleUpload}
+                    linkChild={"View"}
+                    showError={submitFailed}
+                    inputLabelChild={"Resume"}
+                    formHelperTextProps={{
+                        // className: classes.profilePicFormHelperText
+                    }}
+                    inputLabelProps={{
+                        className: classes.formLabel,
+                    }}
+                    inputProps={{
+                        inputProps: {
+                            accept: "image/jpeg, image/jpg"
+                        },
+                    }}
+                />
+
                 <FormLabel component="legend" className={classes.formLabel}>Total Experience</FormLabel>
                 <Box className={classes.groupContainer}>
                     <Field 
@@ -64,13 +117,6 @@ const ProfessionalDetails = ({ handleSubmit, activeStep, handleRemove, handlePre
                         fullWidth
                     />
                 </Box>
-                <Field
-                    name="professional_details.resume"
-                    component={RenderTextField}
-                    className={classes.spaced}
-                    label="Resume"
-                    fullWidth
-                />
                 <Field 
                     name="professional_details.skills"
                     component={RenderAutoComplete}
@@ -99,4 +145,16 @@ const ProfessionalDetails = ({ handleSubmit, activeStep, handleRemove, handlePre
     )
 }
 
-export default reduxForm({})(ProfessionalDetails)
+const mapDispatchToProps = dispatch => {
+    return {
+        upload: formData => dispatch(upload(formData)),
+    }
+}
+
+export default connect(
+    null,
+    mapDispatchToProps
+)(
+    reduxForm({})(ProfessionalDetails)
+)
+

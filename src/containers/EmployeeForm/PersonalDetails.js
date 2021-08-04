@@ -1,12 +1,17 @@
-import React from 'react'
+import React, { useCallback } from 'react'
+import { connect } from 'react-redux'
 import { reduxForm, Field } from 'redux-form'
+
+import _get from 'lodash/get'
 
 import { makeStyles } from '@material-ui/core/styles'
 import Box from '@material-ui/core/Box'
 
 import ActionButtons from './ActionButtons'
+import RenderImage from '../../components/Image/FormField'
 import RenderTextField from '../../components/TextField/FormField'
 import RenderDatePicker from '../../components/DatePicker/FormField'
+import { upload } from '../../state/employeeForm/actions'
 
 const useStyles = makeStyles({
     fieldContainer: {
@@ -18,14 +23,74 @@ const useStyles = makeStyles({
     },
     spaced: {
         margin: 5,
-    }
+    },
+    profilePicFormHelperText: {
+        textAlign: "center",
+    },
+    profilePicLabel: {
+        textAlign: "center",
+        width: "100%",
+    },
+    profilePic: {
+        maxHeight: 150,
+    },
 })
 
-const PersonalDetails = ({ handleSubmit, activeStep, handleRemove, handlePrev, handleExit }) => {
+const PersonalDetails = ({ 
+    handleSubmit, 
+    submitFailed,
+    activeStep, 
+    handleRemove, 
+    handlePrev, 
+    handleExit,
+    upload,
+}) => {
     const classes = useStyles()
+
+    const handleUpload = useCallback(async (e) => {
+        try {
+            console.log("handleUpload", "\nevent", e)
+            if (_get(e, "target.files.length") === 1) {
+
+                const uploadFormData = new FormData()
+                uploadFormData.append("upload", _get(e, "target.files[0]"))
+    
+                const { data: { url } } = await upload(uploadFormData)
+                console.log("profile_pic", url)
+                return url
+            }
+        } catch(err) {
+            console.log(err)
+        }
+
+        // eslint-disable-next-line
+    }, [])
+
     return (
         <form onSubmit={handleSubmit}>
             <Box className={classes.fieldContainer}>
+                <Field 
+                    name="personal_details.profile_pic"
+                    component={RenderImage}
+                    upload={handleUpload}
+                    showError={submitFailed}
+                    inputLabelChild={"Profile picture"}
+                    formHelperTextProps={{
+                        className: classes.profilePicFormHelperText
+                    }}
+                    inputLabelProps={{
+                        className: classes.profilePicLabel,
+                    }}
+                    inputProps={{
+                        inputProps: {
+                            accept: "image/png, image/jpeg, image/jpg"
+                        },
+                    }}
+                    imgProps={{
+                        className: classes.profilePic,
+                    }}
+
+                />
                 <Field
                     name="personal_details.first_name"
                     component={RenderTextField}
@@ -70,11 +135,22 @@ const PersonalDetails = ({ handleSubmit, activeStep, handleRemove, handlePrev, h
                 handleRemove={handleRemove}
                 handlePrev={handlePrev}
                 handleExit={handleExit}
-                nextBtnProps={{type: "submit"}}
+                nextBtnProps={{ type: "submit" }}
             />
         </form>
     )
 }
 
-export default reduxForm({
-})(PersonalDetails)
+
+const mapDispatchToProps = dispatch => {
+    return {
+        upload: formData => dispatch(upload(formData)),
+    }
+}
+
+export default connect(
+    null,
+    mapDispatchToProps,
+)(
+    reduxForm({})(PersonalDetails)
+)

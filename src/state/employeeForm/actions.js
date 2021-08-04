@@ -41,5 +41,22 @@ export const remove = id => async dispatch => {
         return api.employee.delete(id)
     } catch(err) {
         console.log("removing employee failed", err)
+        dispatch(setGlobalAlert(
+            "error",
+            "Removing employee doc failed"
+        ))
     }
 } 
+
+export const upload = formData => async dispatch => {
+    try {
+        console.log("upload action formData", formData)
+        return api.employee.upload(formData)
+    } catch(err) {
+        console.log("uploading failed", err)
+        dispatch(setGlobalAlert(
+            "error",
+            "Uploading failed"
+        ))
+    }
+}

@@ -9,6 +9,7 @@ const api = {
         post: data => axios.post(`${server}/employee/new`, data),
         put: (id, data) => axios.put(`${server}/employee/edit/${id}`, data),
         delete: id => axios.delete(`${server}/employee/delete/${id}`),
+        upload: formData => axios.post(`${server}/upload`, formData),
     }
 }
 
