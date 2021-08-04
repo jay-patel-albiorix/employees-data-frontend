@@ -62,7 +62,7 @@ const Form = ({
                     formName,
                     {
                         current_work: {
-                            company: "Albiorix Technologies Private Limited"
+                            company: "Albiorix Technology Private Limited"
                         }
                     }
                 )
