@@ -6,6 +6,7 @@ import Box from '@material-ui/core/Box'
 import IconButton from '@material-ui/core/IconButton'
 import AddBoxIcon from '@material-ui/icons/AddBox'
 import CancelIcon from '@material-ui/icons/Cancel'
+import Typography from '@material-ui/core/Typography'
 
 import ActionButtons from './ActionButtons'
 import RenderTextField from '../../components/TextField/FormField'
@@ -61,6 +62,7 @@ const RenderEducations = ({ fields, meta: { error } }) => {
 
     return (
         <Box className={classes.fieldArrayComponent}>
+            <Typography variant={"h5"} component={"h1"}>Educational Details</Typography>
             {fields.map((education, index) => {
                 return (
                     <Box key={index} className={classes.mappedFieldContainer}>

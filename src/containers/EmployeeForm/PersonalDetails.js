@@ -6,6 +6,7 @@ import _get from 'lodash/get'
 
 import { makeStyles } from '@material-ui/core/styles'
 import Box from '@material-ui/core/Box'
+import Typography from '@material-ui/core/Typography'
 
 import ActionButtons from './ActionButtons'
 import RenderImage from '../../components/Image/FormField'
@@ -69,6 +70,7 @@ const PersonalDetails = ({
     return (
         <form onSubmit={handleSubmit}>
             <Box className={classes.fieldContainer}>
+                <Typography variant={"h5"} component={"h1"}>Personal Details</Typography>
                 <Field 
                     name="personal_details.profile_pic"
                     component={RenderImage}

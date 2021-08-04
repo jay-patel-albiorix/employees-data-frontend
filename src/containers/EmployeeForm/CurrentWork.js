@@ -3,6 +3,7 @@ import { reduxForm, Field } from 'redux-form'
 
 import { makeStyles } from '@material-ui/core/styles'
 import Box from '@material-ui/core/Box'
+import Typography from '@material-ui/core/Typography'
 
 import ActionButtons from './ActionButtons'
 import RenderTextField from '../../components/TextField/FormField'
@@ -27,6 +28,7 @@ const CurrentWork = ({ handleSubmit, activeStep, handleRemove, handlePrev, handl
     return (
         <form onSubmit={handleSubmit}>
             <Box className={classes.fieldContainer}>
+                <Typography variant={"h5"} component={"h1"}>Current Status</Typography>
                 <Field
                     name="current_work.company"
                     component={RenderTextField} 

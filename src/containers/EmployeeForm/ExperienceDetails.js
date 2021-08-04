@@ -6,6 +6,7 @@ import Box from '@material-ui/core/Box'
 import IconButton from '@material-ui/core/IconButton'
 import AddBoxIcon from '@material-ui/icons/AddBox'
 import CancelIcon from '@material-ui/icons/Cancel'
+import Typography from '@material-ui/core/Typography'
 
 import ActionButtons from './ActionButtons'
 import RenderTextField from '../../components/TextField/FormField'
@@ -60,6 +61,7 @@ const RenderPastWorks = ({ fields, meta: { error } }) => {
 
     return (
         <Box className={classes.fieldArrayComponent}>
+            <Typography variant={"h5"} component={"h1"}>Experience Details</Typography>
             {fields.map((pastWork, index) => {
                 return (
                     <Box key={index} className={classes.mappedFieldContainer}>

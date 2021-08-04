@@ -7,6 +7,7 @@ import _get from 'lodash/get'
 import { makeStyles } from '@material-ui/core/styles'
 import Box from '@material-ui/core/Box'
 import FormLabel from '@material-ui/core/FormLabel';
+import Typography from '@material-ui/core/Typography'
 
 import ActionButtons from './ActionButtons'
 import RenderTextField from '../../components/TextField/FormField'
@@ -74,6 +75,7 @@ const ProfessionalDetails = ({
     return (
         <form onSubmit={handleSubmit}>
             <Box className={classes.fieldContainer}>
+            <Typography variant={"h5"} component={"h1"}>Professional Details</Typography>
             <Field 
                     name="professional_details.resume"
                     component={RenderLink}
