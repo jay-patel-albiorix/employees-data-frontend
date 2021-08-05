@@ -41,6 +41,7 @@ const useStyles = makeStyles({
 })
 
 const ProfessionalDetails = ({ 
+    id,
     handleSubmit, 
     submitFailed, 
     activeStep, 
@@ -137,6 +138,7 @@ const ProfessionalDetails = ({
                 />
             </Box>
             <ActionButtons
+                id={id}
                 activeStep={activeStep}
                 handleRemove={handleRemove}
                 handlePrev={handlePrev}

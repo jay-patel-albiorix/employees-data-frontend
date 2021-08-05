@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { initialize, destroy, SubmissionError } from 'redux-form'
 
 import _get from 'lodash/get'
+import _isString from 'lodash/isString'
 
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
@@ -113,9 +114,9 @@ const Form = ({
             console.log("handleSubmit response", submitResponse)
             return submitResponse
         } catch({ message, response }) {
-            console.log("handleSubmit catch", message, response, _get(response, "data.message"))
+            console.log("handleSubmit catch", message, response, _get(response, "data"))
             // return Promise.reject(_get(response, "data.message"))
-            throw new SubmissionError(_get(response, "data"))
+            throw new SubmissionError(_get(response, "data", message))
         }
         // eslint-disable-next-line
     }, [])
@@ -135,7 +136,7 @@ const Form = ({
         console.log("handleSubmitFail", errors)
         setGlobalAlert(
             "error",
-            _get(errors, "message"),
+            _get(errors, "message", _isString(errors) ? errors : "Network error"),
         )
         // eslint-disable-next-line
     }, [])
@@ -203,6 +204,7 @@ const Form = ({
 
 
                     {activeStep === 0 && <PersonalDetails 
+                        id={_get(match, "params.id")}
                         form={formName}   
                         destroyOnUnmount={false}
                         activeStep={activeStep}   
@@ -213,6 +215,7 @@ const Form = ({
                         onSubmit={handleNext}       
                     />}
                     {activeStep === 1 && <BankDetails 
+                        id={_get(match, "params.id")}
                         form={formName}
                         destroyOnUnmount={false}
                         activeStep={activeStep}            
@@ -223,6 +226,7 @@ const Form = ({
                         onSubmit={handleNext}                   
                     />}
                     {activeStep === 2 && <ProfessionalDetails 
+                        id={_get(match, "params.id")}
                         form={formName}
                         destroyOnUnmount={false}
                         activeStep={activeStep}            
@@ -233,6 +237,7 @@ const Form = ({
                         onSubmit={handleNext}                   
                     />}
                     {activeStep === 3 && <CurrentWork 
+                        id={_get(match, "params.id")}
                         form={formName}                    
                         destroyOnUnmount={false}
                         activeStep={activeStep}            
@@ -243,6 +248,7 @@ const Form = ({
                         onSubmit={handleNext}                   
                     />}
                     {activeStep === 4 && <ExperienceDetails 
+                        id={_get(match, "params.id")}
                         form={formName}                    
                         destroyOnUnmount={false}
                         activeStep={activeStep}            
@@ -253,6 +259,7 @@ const Form = ({
                         onSubmit={handleNext}                   
                     />}
                     {activeStep === 5 && <EducationalDetails 
+                        id={_get(match, "params.id")}
                         form={formName}        
                         destroyOnUnmount={false}
                         onSubmitSuccess={handleSubmitSuccess}            

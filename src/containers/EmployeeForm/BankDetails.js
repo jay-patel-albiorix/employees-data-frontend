@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     }
 })
 
-const BankDetails = ({ handleSubmit, activeStep, handleRemove, handlePrev, handleExit }) => {
+const BankDetails = ({ id, handleSubmit, activeStep, handleRemove, handlePrev, handleExit }) => {
     const classes = useStyles()
 
     return (
@@ -58,6 +58,7 @@ const BankDetails = ({ handleSubmit, activeStep, handleRemove, handlePrev, handl
                 />
             </Box>
             <ActionButtons
+                id={id}
                 activeStep={activeStep}
                 handleRemove={handleRemove}
                 handlePrev={handlePrev}

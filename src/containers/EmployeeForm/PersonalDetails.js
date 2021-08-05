@@ -38,6 +38,7 @@ const useStyles = makeStyles({
 })
 
 const PersonalDetails = ({ 
+    id,
     handleSubmit, 
     submitFailed,
     activeStep, 
@@ -133,6 +134,7 @@ const PersonalDetails = ({
                 />
             </Box>
             <ActionButtons
+                id={id}
                 activeStep={activeStep}
                 handleRemove={handleRemove}
                 handlePrev={handlePrev}

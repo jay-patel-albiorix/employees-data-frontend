@@ -143,7 +143,7 @@ const RenderPastWorks = ({ fields, meta: { error } }) => {
     )
 }
 
-const ExperienceDetails = ({ handleSubmit, activeStep, handleRemove, handlePrev, handleExit }) => {
+const ExperienceDetails = ({ id, handleSubmit, activeStep, handleRemove, handlePrev, handleExit }) => {
     const classes = useStyles()
 
     return (
@@ -155,6 +155,7 @@ const ExperienceDetails = ({ handleSubmit, activeStep, handleRemove, handlePrev,
                 />
             </Box>
             <ActionButtons
+                id={id}
                 activeStep={activeStep}
                 handleRemove={handleRemove}
                 handlePrev={handlePrev}

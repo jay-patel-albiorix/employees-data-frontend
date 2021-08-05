@@ -22,7 +22,7 @@ const useStyles = makeStyles({
     }
 })
 
-const CurrentWork = ({ handleSubmit, activeStep, handleRemove, handlePrev, handleExit }) => {
+const CurrentWork = ({ id, handleSubmit, activeStep, handleRemove, handlePrev, handleExit }) => {
     const classes = useStyles()
 
     return (
@@ -75,6 +75,7 @@ const CurrentWork = ({ handleSubmit, activeStep, handleRemove, handlePrev, handl
                 
             </Box>
             <ActionButtons
+                id={id}
                 activeStep={activeStep}
                 handleRemove={handleRemove}
                 handlePrev={handlePrev}
