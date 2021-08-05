@@ -16,7 +16,7 @@ const useStyles = makeStyles({
     },    
 })
 
-const ActionButtons = ({ activeStep, handleRemove, handlePrev, handleExit, nextBtnProps = {}, submitBtnProps = {} }) => {
+const ActionButtons = ({ id, activeStep, handleRemove, handlePrev, handleExit, nextBtnProps = {}, submitBtnProps = {} }) => {
     const classes = useStyles()
 
     return (
@@ -25,6 +25,7 @@ const ActionButtons = ({ activeStep, handleRemove, handlePrev, handleExit, nextB
                 color="secondary"
                 variant="contained"
                 onClick={handleRemove}
+                disabled={id ? false : true}
             >
                 Remove
             </Button>
