@@ -136,7 +136,7 @@ const Form = ({
         console.log("handleSubmitFail", errors)
         setGlobalAlert(
             "error",
-            _get(errors, "message", _isString(errors) ? errors : "Network error"),
+            _get(errors, "message", _isString(errors) ? errors : "Submit failed"),
         )
         // eslint-disable-next-line
     }, [])
