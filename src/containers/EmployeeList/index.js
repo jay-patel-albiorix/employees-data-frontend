@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useCallback } from 'react'
 import { connect } from 'react-redux'
+import { gql, useQuery, makeVar } from '@apollo/client'
 import { useTable, usePagination } from 'react-table'
 
 import _get from 'lodash/get'
@@ -23,6 +24,40 @@ import TablePagination from '@material-ui/core/TablePagination'
 
 import { getListData, changePage, changeRowPerPage, changeFilter} from '../../state/employeeList/actions'
 
+export const searchVar = makeVar("")
+
+const GET_EMPLOYEE_LIST = gql`
+  query ListQuery(
+    $keys: String!
+    $search: String
+  ) {
+    employeeList(
+      keys: $keys
+      search: $search
+    ) {
+      meta {
+        count
+      }
+      data {
+        _id
+        personal_details {
+          first_name
+          last_name
+        }
+        current_work {
+          designation
+          department
+        }
+      }
+    }
+  }
+` 
+const GET_SEARCH = gql`
+  query SearchList {
+    search @client
+  }
+`
+
 const useStyles = makeStyles({
   spaced: {
     margin: 5,
@@ -38,30 +73,60 @@ const useStyles = makeStyles({
 })
 
 const List = ({
-  getListData,
-  changePage,
-  changeRowPerPage,
-  changeFilter,
+  // getListData,
+  // changePage,
+  // changeRowPerPage,
+  // changeFilter,
   history,
   location,
   match,
-  data,
-  count,
-  currentPageIndex,
-  rowsPerPage,
-  search,
+  // data,
+  // count,
+  // currentPageIndex,
+  // rowsPerPage,
+  // search,
 }) => {
-  console.log("rendering employee list")
-  useEffect(() => {
-    const keys = {
-      "personal_details.first_name": 1,
-      "personal_details.last_name": 1,
-      "current_work.designation": 1,
-      "current_work.department": 1,
+  console.log("gql rendering employee list")
+  
+  const { 
+    data:  { search }  = {search: ""} 
+  } = useQuery(GET_SEARCH)
+  
+  console.log("gql search", search, "searchVar()", searchVar())
+
+  const { 
+    data: { employeeList: { data, meta: { count } } } = {employeeList: {data: [], meta: {count: 0}} }, 
+    loading, 
+    error 
+  } = useQuery(
+    GET_EMPLOYEE_LIST,
+    {
+      variables: {
+        keys: JSON.stringify({
+          "personal_details.first_name": 1,
+          "personal_details.last_name": 1,
+          "current_work.designation": 1,
+          "current_work.department": 1,
+        }),
+        search,
+      }
     }
-    console.log("getting listData", currentPageIndex, rowsPerPage, search, keys)
-      getListData(currentPageIndex * rowsPerPage, rowsPerPage, search, keys)
-  }, [getListData, currentPageIndex, rowsPerPage, search])
+  )
+
+  console.log("\ngql error in getting list", error)
+  console.log("\ngql list is loading", loading)
+  console.log("\ngql list data", data)
+
+  // useEffect(() => {
+  //   const keys = {
+  //     "personal_details.first_name": 1,
+  //     "personal_details.last_name": 1,
+  //     "current_work.designation": 1,
+  //     "current_work.department": 1,
+  //   }
+  //   console.log("getting listData", currentPageIndex, rowsPerPage, search, keys)
+  //     getListData(currentPageIndex * rowsPerPage, rowsPerPage, search, keys)
+  // }, [getListData, currentPageIndex, rowsPerPage, search])
 
   const classes = useStyles()
 
@@ -69,7 +134,7 @@ const List = ({
       {
         Header: "Name",
         accessor: "personal_details",
-        Cell: ({ value }) => `${_get(value, "first_name", "")} ${_get(value, "last_name", "")}`,
+        Cell: ({ value }) => `${_get(value, "first_name") || ""} ${_get(value, "last_name") || ""}`,
       },
       {
         Header: "Designation",
@@ -82,17 +147,17 @@ const List = ({
   ], [])
 
   const handlePageChange = useCallback((event, newPageIndex) => {
-    changePage(newPageIndex)
+    // changePage(newPageIndex)
     // eslint-disable-next-line
   }, [])
 
   const handleRowsPerPageChange = useCallback((event) => {
-    changeRowPerPage(_get(event, "target.value"))
+    // changeRowPerPage(_get(event, "target.value"))
     // eslint-disable-next-line
   }, [])
 
   const handleSearch = useCallback((event) => {
-    changeFilter(_get(event, "target.value"))
+    searchVar(_get(event, "target.value", ""))
     // eslint-disable-next-line
   }, [])
 
@@ -112,10 +177,10 @@ const List = ({
       data,
       manualPagination: true,
       initialState: {
-        pageSize: rowsPerPage,
-        pageIndex: currentPageIndex,
+        pageSize: 10,
+        pageIndex: 0,
       },
-      pageCount: _ceil(count/rowsPerPage),
+      pageCount: 1,
     },
     usePagination,
   )
@@ -174,9 +239,9 @@ const List = ({
             <TableFooter>
               <TableRow>
                 <TablePagination 
-                  count={count}
-                  page={currentPageIndex}
-                  rowsPerPage={rowsPerPage}
+                  count={0}
+                  page={0}
+                  rowsPerPage={10}
                   rowsPerPageOptions={[5, 10, 25, 50]}
                   onPageChange={handlePageChange}
                   onRowsPerPageChange={handleRowsPerPageChange}
@@ -190,26 +255,29 @@ const List = ({
   )
 }
 
-const mapStateToProps = state => {
-    return {
-        data: _get(state, "employeeList.data"),
-        count: _get(state, "employeeList.meta.count", 0),
-        currentPageIndex: _get(state, "employeeList.currentPageIndex"),
-        rowsPerPage: _get(state, "employeeList.rowsPerPage"),
-        search: _get(state, "employeeList.search"),
-    }
-}
+// const mapStateToProps = state => {
+//     return {
+//         data: _get(state, "employeeList.data"),
+//         count: _get(state, "employeeList.meta.count", 0),
+//         currentPageIndex: _get(state, "employeeList.currentPageIndex"),
+//         rowsPerPage: _get(state, "employeeList.rowsPerPage"),
+//         search: _get(state, "employeeList.search"),
+//     }
+// }
 
-const mapDispatchToProps = dispatch => {
-    return {
-        getListData: (skip, limit, search, keys) => dispatch(getListData(skip, limit, search, keys)),
-        changePage: newPageIndex => dispatch(changePage(newPageIndex)),
-        changeRowPerPage: newRowPerPage => dispatch(changeRowPerPage(newRowPerPage)),
-        changeFilter: search => dispatch(changeFilter(search)),
-    }
-}
+// const mapDispatchToProps = dispatch => {
+//     return {
+//         getListData: (skip, limit, search, keys) => dispatch(getListData(skip, limit, search, keys)),
+//         changePage: newPageIndex => dispatch(changePage(newPageIndex)),
+//         changeRowPerPage: newRowPerPage => dispatch(changeRowPerPage(newRowPerPage)),
+//         changeFilter: search => dispatch(changeFilter(search)),
+//     }
+// }
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(List)
+export default 
+// connect(
+//     mapStateToProps,
+//     mapDispatchToProps,
+// )(
+  List
+// )
