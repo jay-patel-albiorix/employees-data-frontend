@@ -1,17 +1,5 @@
-import { InMemoryCache } from '@apollo/client'
-import { searchVar } from './containers/EmployeeList'
+import { InMemoryCache, makeVar } from '@apollo/client'
 
-export const cache = new InMemoryCache({
-    typePolicies: {
-      Query: {
-        fields: {
-          search(){
-              return searchVar()
-            }
-          }
-        }
-    }
-})
-
+export const cache = new InMemoryCache()
 
 

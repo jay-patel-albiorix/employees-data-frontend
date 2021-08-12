@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useCallback } from 'react'
 import { connect } from 'react-redux'
-import { gql, useQuery, makeVar } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { useTable, usePagination } from 'react-table'
 
 import _get from 'lodash/get'
@@ -23,17 +23,20 @@ import TablePagination from '@material-ui/core/TablePagination'
 
 
 import { getListData, changePage, changeRowPerPage, changeFilter} from '../../state/employeeList/actions'
-
-export const searchVar = makeVar("")
+import { cache } from '../../cache'
 
 const GET_EMPLOYEE_LIST = gql`
   query ListQuery(
     $keys: String!
     $search: String
+    $skip: Int
+    $limit: Int
   ) {
     employeeList(
       keys: $keys
       search: $search
+      skip: $skip
+      limit: $limit
     ) {
       meta {
         count
@@ -55,6 +58,18 @@ const GET_EMPLOYEE_LIST = gql`
 const GET_SEARCH = gql`
   query SearchList {
     search @client
+    currentPageIndex @client
+  }
+`
+const GET_CURRENT_PAGE_INDEX = gql`
+  query CurrentPageIndex {
+    currentPageIndex @client
+  }
+`
+const GET_ROWS_PER_PAGE = gql`
+  query RowsPerPage {
+    rowsPerPage @client
+    currentPageIndex @client
   }
 `
 
@@ -92,12 +107,19 @@ const List = ({
     data:  { search }  = {search: ""} 
   } = useQuery(GET_SEARCH)
   
-  console.log("gql search", search, "searchVar()", searchVar())
+  const {
+    data: { currentPageIndex } = {currentPageIndex: 0}
+  } = useQuery(GET_CURRENT_PAGE_INDEX)
+
+  const {
+    data: { rowsPerPage } = {rowsPerPage: 10}
+  } = useQuery(GET_ROWS_PER_PAGE)
+
 
   const { 
     data: { employeeList: { data, meta: { count } } } = {employeeList: {data: [], meta: {count: 0}} }, 
     loading, 
-    error 
+    error, 
   } = useQuery(
     GET_EMPLOYEE_LIST,
     {
@@ -109,13 +131,19 @@ const List = ({
           "current_work.department": 1,
         }),
         search,
+        skip: currentPageIndex * rowsPerPage,
+        limit: rowsPerPage,
       }
     }
   )
 
   console.log("\ngql error in getting list", error)
-  console.log("\ngql list is loading", loading)
-  console.log("\ngql list data", data)
+  // console.log("\ngql list is loading", loading)
+  // console.log("\ngql list data", data)
+  console.log("gql currentPageIndex", currentPageIndex)
+  console.log("gql rowsPerPage", rowsPerPage)
+  console.log("gql search", search)
+
 
   // useEffect(() => {
   //   const keys = {
@@ -147,17 +175,34 @@ const List = ({
   ], [])
 
   const handlePageChange = useCallback((event, newPageIndex) => {
-    // changePage(newPageIndex)
+    cache.writeQuery({
+      query: GET_CURRENT_PAGE_INDEX,
+      data: {
+        currentPageIndex: newPageIndex,
+      }
+    })
     // eslint-disable-next-line
   }, [])
 
   const handleRowsPerPageChange = useCallback((event) => {
-    // changeRowPerPage(_get(event, "target.value"))
+    cache.writeQuery({
+      query: GET_ROWS_PER_PAGE,
+      data: {
+        rowsPerPage: _get(event, "target.value", 10),
+        currentPageIndex: 0,
+      }
+    })
     // eslint-disable-next-line
   }, [])
 
   const handleSearch = useCallback((event) => {
-    searchVar(_get(event, "target.value", ""))
+    cache.writeQuery({
+      query: GET_SEARCH,
+      data: {
+        search: _get(event, "target.value", ""),
+        currentPageIndex: 0,
+      }
+    })
     // eslint-disable-next-line
   }, [])
 
@@ -177,15 +222,14 @@ const List = ({
       data,
       manualPagination: true,
       initialState: {
-        pageSize: 10,
-        pageIndex: 0,
+        pageSize: rowsPerPage,
+        pageIndex: currentPageIndex,
       },
       pageCount: 1,
     },
     usePagination,
   )
 
-  console.log("table props", getTableProps())
   return (
     <Grid container justifyContent="center">
       <Grid item sm={12} lg={9} xl={6}>
@@ -238,14 +282,20 @@ const List = ({
             </TableBody>
             <TableFooter>
               <TableRow>
+                {error || loading ?
+                <TableCell colSpan={3}>
+                  {(error && _get(error, "message", "Error")) || "Loading..."}
+                </TableCell> 
+                :
                 <TablePagination 
-                  count={0}
-                  page={0}
-                  rowsPerPage={10}
+                  count={count}
+                  page={currentPageIndex}
+                  rowsPerPage={rowsPerPage}
                   rowsPerPageOptions={[5, 10, 25, 50]}
                   onPageChange={handlePageChange}
                   onRowsPerPageChange={handleRowsPerPageChange}
                 />
+                }
               </TableRow>
             </TableFooter>
           </MaUTable>
