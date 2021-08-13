@@ -104,7 +104,8 @@ const List = ({
         search: search,
         skip: currentPageIndex * rowsPerPage,
         limit: rowsPerPage,
-      }
+      },
+      // fetchPolicy: "network-only",
     }
   )
 

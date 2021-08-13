@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { connect } from 'react-redux'
 import { initialize, destroy, SubmissionError } from 'redux-form'
+import { gql, useLazyQuery, useMutation } from '@apollo/client'
 
 import _get from 'lodash/get'
 import _isString from 'lodash/isString'
@@ -30,6 +31,63 @@ import ExperienceDetails from './ExperienceDetails'
 import CurrentWork from './CurrentWork'
 
 
+const GET_EXISTING_DATA = gql`
+    query ByIdQuery($_id: ID!) {
+        employee(_id: $_id) {
+            _id
+            personal_details {
+                first_name
+                last_name
+                date_of_birth
+                phone
+                email
+                profile_pic
+            }
+            bank_details {
+                account_number
+                ifsc
+                pan_card_number
+                adhaar_card_number
+            }
+            professional_details {
+                experience {
+                    years
+                    months
+                }
+                skills
+                resume
+            }
+            educational_details {
+                _id
+                course
+                university
+                passed_on
+                grade
+            }
+            past_works {
+                _id
+                company
+                designation
+                department
+                ctc
+                from
+                to
+            }
+            current_work {
+                company
+                designation
+                department
+                ctc
+                from
+            }
+            createdAt
+            updatedAt
+            _v
+        }
+    }
+`
+
+
 const useStyles = makeStyles({
     spaced: {
         margin: 5,
@@ -52,25 +110,35 @@ const Form = ({
     const [activeStep, setActiveStep] = useState(0)
     const [removeAlert, setRemoveAlert] = useState(false)
 
-    useEffect(() => {
-        const func = async () => {
-            const id = _get(match, "params.id")
-            if(id) {
-                const initialData = await getById(id)
-                initialize(formName, initialData)
-            } else {
-                initialize(
-                    formName,
-                    {
-                        current_work: {
-                            company: "Albiorix Technology Private Limited"
-                        }
-                    }
-                )
-            }
+    const [ fetchEmployee ] = useLazyQuery(
+        GET_EXISTING_DATA,
+        {
+            variables: {
+                _id: _get(match, "params.id")
+            },
+            fetchPolicy: "network-only",
+            onCompleted: ({ employee }) => {
+                console.log("onComplete fetchEmployee", employee)
+                initialize(formName, employee)
+            },
         }
-        func()
-        // eslint-disable-next-line
+    )
+
+    useEffect(() => {
+        const id = _get(match, "params.id")
+        if(id) {
+           fetchEmployee()
+        } else {
+            initialize(
+                formName,
+                {
+                    current_work: {
+                        company: "Albiorix Technology Private Limited"
+                    }
+                }
+            )
+        }
+
     }, [])
 
     const classes = useStyles()
