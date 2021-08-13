@@ -1,10 +1,12 @@
-import React, { useEffect, useMemo, useCallback } from 'react'
-import { connect } from 'react-redux'
+import React, { useMemo, useCallback } from 'react'
 import { gql, useQuery } from '@apollo/client'
 import { useTable, usePagination } from 'react-table'
 
 import _get from 'lodash/get'
 import _ceil from 'lodash/ceil'
+
+import { cache } from '../../cache'
+
 
 import { makeStyles } from '@material-ui/core/styles'
 import Box from '@material-ui/core/Box'
@@ -21,9 +23,6 @@ import TableRow from '@material-ui/core/TableRow'
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination'
 
-
-import { getListData, changePage, changeRowPerPage, changeFilter} from '../../state/employeeList/actions'
-import { cache } from '../../cache'
 
 const GET_EMPLOYEE_LIST = gql`
   query ListQuery(
@@ -55,21 +54,11 @@ const GET_EMPLOYEE_LIST = gql`
     }
   }
 ` 
-const GET_SEARCH = gql`
+const GET_LIST_STATE = gql`
   query SearchList {
     search @client
     currentPageIndex @client
-  }
-`
-const GET_CURRENT_PAGE_INDEX = gql`
-  query CurrentPageIndex {
-    currentPageIndex @client
-  }
-`
-const GET_ROWS_PER_PAGE = gql`
-  query RowsPerPage {
     rowsPerPage @client
-    currentPageIndex @client
   }
 `
 
@@ -88,33 +77,15 @@ const useStyles = makeStyles({
 })
 
 const List = ({
-  // getListData,
-  // changePage,
-  // changeRowPerPage,
-  // changeFilter,
   history,
   location,
   match,
-  // data,
-  // count,
-  // currentPageIndex,
-  // rowsPerPage,
-  // search,
 }) => {
-  console.log("gql rendering employee list")
+  console.log("\n\ngql rendering employee list")
   
   const { 
-    data:  { search }  = {search: ""} 
-  } = useQuery(GET_SEARCH)
-  
-  const {
-    data: { currentPageIndex } = {currentPageIndex: 0}
-  } = useQuery(GET_CURRENT_PAGE_INDEX)
-
-  const {
-    data: { rowsPerPage } = {rowsPerPage: 10}
-  } = useQuery(GET_ROWS_PER_PAGE)
-
+    data:  { search, currentPageIndex, rowsPerPage }  = {search: "", currentPageIndex: 0, rowsPerPage: 10} 
+  } = useQuery(GET_LIST_STATE)
 
   const { 
     data: { employeeList: { data, meta: { count } } } = {employeeList: {data: [], meta: {count: 0}} }, 
@@ -130,31 +101,20 @@ const List = ({
           "current_work.designation": 1,
           "current_work.department": 1,
         }),
-        search,
+        search: search,
         skip: currentPageIndex * rowsPerPage,
         limit: rowsPerPage,
       }
     }
   )
 
-  console.log("\ngql error in getting list", error)
+  console.log("gql error in getting list", error)
   // console.log("\ngql list is loading", loading)
   // console.log("\ngql list data", data)
   console.log("gql currentPageIndex", currentPageIndex)
   console.log("gql rowsPerPage", rowsPerPage)
   console.log("gql search", search)
 
-
-  // useEffect(() => {
-  //   const keys = {
-  //     "personal_details.first_name": 1,
-  //     "personal_details.last_name": 1,
-  //     "current_work.designation": 1,
-  //     "current_work.department": 1,
-  //   }
-  //   console.log("getting listData", currentPageIndex, rowsPerPage, search, keys)
-  //     getListData(currentPageIndex * rowsPerPage, rowsPerPage, search, keys)
-  // }, [getListData, currentPageIndex, rowsPerPage, search])
 
   const classes = useStyles()
 
@@ -175,36 +135,58 @@ const List = ({
   ], [])
 
   const handlePageChange = useCallback((event, newPageIndex) => {
+    console.log("gql handlePageChange")
+    console.log("gql currentPageIndex", currentPageIndex, "-->", newPageIndex)
+    console.log("gql rowsPerPage", rowsPerPage)
+    console.log("gql search", search)
+  
     cache.writeQuery({
-      query: GET_CURRENT_PAGE_INDEX,
+      query: GET_LIST_STATE,
       data: {
+        search: search,
         currentPageIndex: newPageIndex,
+        rowsPerPage: rowsPerPage,
       }
     })
+
     // eslint-disable-next-line
-  }, [])
+  }, [search, currentPageIndex, rowsPerPage])
 
   const handleRowsPerPageChange = useCallback((event) => {
+    console.log("handleRowsPerPageChange")
+    console.log("gql currentPageIndex", currentPageIndex)
+    console.log("gql rowsPerPage", rowsPerPage, "-->", _get(event, "target.value"))
+    console.log("gql search", search)
+  
     cache.writeQuery({
-      query: GET_ROWS_PER_PAGE,
+      query: GET_LIST_STATE,
       data: {
-        rowsPerPage: _get(event, "target.value", 10),
+        search: search,
         currentPageIndex: 0,
+        rowsPerPage: _get(event, "target.value", 10),
       }
     })
+
     // eslint-disable-next-line
-  }, [])
+  }, [search, currentPageIndex, rowsPerPage])
 
   const handleSearch = useCallback((event) => {
+    console.log("handleSearch")
+    console.log("gql currentPageIndex", currentPageIndex)
+    console.log("gql rowsPerPage", rowsPerPage)
+    console.log("gql search", search, "-->", _get(event, "target.value"))
+  
     cache.writeQuery({
-      query: GET_SEARCH,
+      query: GET_LIST_STATE,
       data: {
         search: _get(event, "target.value", ""),
         currentPageIndex: 0,
+        rowsPerPage: rowsPerPage,
       }
     })
+
     // eslint-disable-next-line
-  }, [])
+  }, [search, currentPageIndex, rowsPerPage])
 
   // eslint-disable-next-line
   const handleAddNewRoute = useCallback(() => history.push("/employee-form"), [])
@@ -225,7 +207,7 @@ const List = ({
         pageSize: rowsPerPage,
         pageIndex: currentPageIndex,
       },
-      pageCount: 1,
+      pageCount: _ceil(count/rowsPerPage),
     },
     usePagination,
   )
@@ -304,30 +286,4 @@ const List = ({
     </Grid>
   )
 }
-
-// const mapStateToProps = state => {
-//     return {
-//         data: _get(state, "employeeList.data"),
-//         count: _get(state, "employeeList.meta.count", 0),
-//         currentPageIndex: _get(state, "employeeList.currentPageIndex"),
-//         rowsPerPage: _get(state, "employeeList.rowsPerPage"),
-//         search: _get(state, "employeeList.search"),
-//     }
-// }
-
-// const mapDispatchToProps = dispatch => {
-//     return {
-//         getListData: (skip, limit, search, keys) => dispatch(getListData(skip, limit, search, keys)),
-//         changePage: newPageIndex => dispatch(changePage(newPageIndex)),
-//         changeRowPerPage: newRowPerPage => dispatch(changeRowPerPage(newRowPerPage)),
-//         changeFilter: search => dispatch(changeFilter(search)),
-//     }
-// }
-
-export default 
-// connect(
-//     mapStateToProps,
-//     mapDispatchToProps,
-// )(
-  List
-// )
+export default List
