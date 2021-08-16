@@ -107,7 +107,8 @@ const List = ({
         skip: currentPageIndex * rowsPerPage,
         limit: rowsPerPage,
       },
-      // fetchPolicy: "network-only",
+      fetchPolicy: "network-only",
+      // onError: () => {},
     }
   )
 

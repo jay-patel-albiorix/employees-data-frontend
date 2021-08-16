@@ -19,7 +19,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 
-import { getById, submit, remove } from '../../state/employeeForm/actions'
+import { submit, remove } from '../../state/employeeForm/actions'
 import { setGlobalAlert } from '../../state/globalAlert/actions'
 import syncValidate from './syncValidate'
 
@@ -82,7 +82,63 @@ const GET_EXISTING_DATA = gql`
             }
             createdAt
             updatedAt
-            _v
+            schema_version 
+        }
+    }
+`
+
+const POST_NEW_DATA = gql`
+    mutation Post($data: EmployeeInput!) {
+        post(data: $data) {
+            _id
+            personal_details {
+                first_name
+                last_name
+                date_of_birth
+                phone
+                email
+                profile_pic
+            }
+            bank_details {
+                account_number
+                ifsc
+                pan_card_number
+                adhaar_card_number
+            }
+            professional_details {
+                experience {
+                    years
+                    months
+                }
+                skills
+                resume
+            }
+            educational_details {
+                _id
+                course
+                university
+                passed_on
+                grade
+            }
+            past_works {
+                _id
+                company
+                designation
+                department
+                ctc
+                from
+                to
+            }
+            current_work {
+                company
+                designation
+                department
+                ctc
+                from
+            }
+            createdAt
+            updatedAt
+            schema_version 
         }
     }
 `
@@ -97,7 +153,6 @@ const useStyles = makeStyles({
 export const formName = "employee"
 
 const Form = ({
-    getById,
     initialize,
     destroy,
     submit,
@@ -121,6 +176,7 @@ const Form = ({
                 console.log("onComplete fetchEmployee", employee)
                 initialize(formName, employee)
             },
+            // onError: () => {},
         }
     )
 
@@ -138,8 +194,15 @@ const Form = ({
                 }
             )
         }
-
+        // eslint-disable-next-line 
     }, [])
+
+    const [ post ] = useMutation(
+        POST_NEW_DATA,
+        // {
+        //     onError: () => {}
+        // }    
+    )
 
     const classes = useStyles()
 
@@ -175,12 +238,21 @@ const Form = ({
 
     const handleSubmit = useCallback(async (values,) => {
         try {
-            console.log("submitting", values)
+            console.log("submitting using gql", values)
 
             const id = _get(match, "params.id")
-            const submitResponse = await submit(id, values)
-            console.log("handleSubmit response", submitResponse)
-            return submitResponse
+            return id ? (
+               await post({
+                    variables: {
+                        data: values
+                    }
+                })
+            ) : await post({
+                variables: {
+                    data: values
+                }
+          
+            })
         } catch({ message, response }) {
             console.log("handleSubmit catch", message, response, _get(response, "data"))
             // return Promise.reject(_get(response, "data.message"))
@@ -353,7 +425,6 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        getById: id => dispatch(getById(id)),
         initialize: (formName, data) => dispatch(initialize(formName, data)),
         destroy: formName => dispatch(destroy(formName)),
         submit: (id, values) => dispatch(submit(id, values)),
