@@ -27,6 +27,8 @@ export const getById = id => async dispatch => {
 export const submit = (id, values) => async dispatch => {
     try {
         if(id) {
+            delete values.updatedAt
+
             return await api.employee.put(id, values)
         } else {
             return await api.employee.post(values)
