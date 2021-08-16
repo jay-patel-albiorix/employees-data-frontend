@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react'
+import React, { useState, useMemo, useCallback } from 'react'
 import { gql, useQuery } from '@apollo/client'
 import { useTable, usePagination } from 'react-table'
 
@@ -83,6 +83,8 @@ const List = ({
 }) => {
   console.log("\n\ngql rendering employee list")
   
+  const [ localSearch, setLocalSearch ] = useState("")
+
   const { 
     data:  { search, currentPageIndex, rowsPerPage }  = {search: "", currentPageIndex: 0, rowsPerPage: 10} 
   } = useQuery(GET_LIST_STATE)
@@ -177,6 +179,8 @@ const List = ({
     console.log("gql rowsPerPage", rowsPerPage)
     console.log("gql search", search, "-->", _get(event, "target.value"))
   
+    setLocalSearch(_get(event, "target.value", ""))
+
     cache.writeQuery({
       query: GET_LIST_STATE,
       data: {
@@ -222,7 +226,7 @@ const List = ({
           </Typography>
           <Box className={classes.actionHeader}>
             <TextField className={classes.spaced} label="Search" variant="outlined"
-              value={search}
+              value={localSearch || search}
               onChange={handleSearch}
             />
             <Button className={classes.spaced} variant="contained" color="primary"
