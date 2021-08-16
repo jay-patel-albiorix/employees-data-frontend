@@ -132,7 +132,10 @@ const ProfessionalDetails = ({
                     }}
                     textFieldsProps={{
                         label: "Skills",
-                        onKeyDown: e => e.preventDefault(),
+                        onKeyDown: e => {
+                            // console.log("skills onKeyDown event", e, "key", e.key)
+                            if(e.key === "Enter") e.preventDefault()
+                        },
                         fullWidth: true
                     }}
                 />
