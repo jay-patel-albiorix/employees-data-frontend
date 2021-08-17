@@ -59,7 +59,7 @@ const ActionButtons = ({ id, activeStep, handleRemove, handlePrev, handleExit, n
             </Box>
             <Button
                 disabled={activeStep !== 5} 
-                color="Primary"
+                color="primary"
                 variant="contained"
                 {...submitBtnProps}
             >

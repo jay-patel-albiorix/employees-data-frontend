@@ -5,9 +5,12 @@ import { useLazyQuery, useMutation } from '@apollo/client'
 
 import _get from 'lodash/get'
 import _isString from 'lodash/isString'
+import _set from 'lodash/set'
+import _map from 'lodash/map'
 
 import { GET_EXISTING_EMPLOYEE } from '../../graphql/queries'
-import { POST_NEW_EMPLOYEE } from '../../graphql/mutations'
+import { POST_NEW_EMPLOYEE, PUT_EMPLOYEE } from '../../graphql/mutations'
+import { omitDeepFields } from '../../utilities'
 
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
@@ -34,6 +37,32 @@ import ExperienceDetails from './ExperienceDetails'
 import CurrentWork from './CurrentWork'
 
 
+const normalizeInitialValues = (employee) => {
+    const normalizedEmployee = omitDeepFields(employee, "__typename")
+                
+    const experienceYears = _get(normalizedEmployee, "professional_details.experience.years")
+    const experienceMonths = _get(normalizedEmployee, "professional_details.experience.months")
+    const currentCtc = _get(normalizedEmployee, "current_work.ctc")
+
+    if(experienceYears !== null) _set(normalizedEmployee, "professional_details.experience.years", `${experienceYears}`)
+    if(experienceMonths !== null) _set(normalizedEmployee, "professional_details.experience.months", `${experienceMonths}`)
+    if(currentCtc !== null) _set(normalizedEmployee, "current_work.ctc", `${currentCtc}`)
+    
+    _set(
+        normalizedEmployee,
+        "past_works",
+        _map(
+            _get(normalizedEmployee, "past_works"),
+            work => {
+                const ctc = _get(work, "ctc")
+                if(ctc !== null) _set(work, "ctc", `${ctc}`) 
+                return work
+            }
+        )    
+    )
+
+    return normalizedEmployee
+}
 
 const useStyles = makeStyles({
     spaced: {
@@ -64,8 +93,12 @@ const Form = ({
             },
             fetchPolicy: "network-only",
             onCompleted: ({ employee }) => {
+            
                 console.log("onComplete fetchEmployee", employee)
-                initialize(formName, employee)
+                const normalizedEmployee = normalizeInitialValues(employee)
+                console.log("onComplete normaizedEmployee", normalizedEmployee)
+
+                initialize(formName, normalizedEmployee)
             },
             // onError: () => {},
         }
@@ -93,6 +126,13 @@ const Form = ({
         // {
         //     onError: () => {}
         // }    
+    )
+
+    const [ put ] = useMutation(
+        PUT_EMPLOYEE,
+        // {
+        //     onError: () => {}
+        // }
     )
 
     const classes = useStyles()
@@ -133,9 +173,10 @@ const Form = ({
 
             const id = _get(match, "params.id")
             return id ? (
-               await post({
+               await put({
                     variables: {
-                        data: values
+                        _id: id,
+                        data: values,
                     }
                 })
             ) : await post({
