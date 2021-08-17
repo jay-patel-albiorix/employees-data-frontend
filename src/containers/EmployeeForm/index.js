@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { connect } from 'react-redux'
 import { initialize, destroy, SubmissionError } from 'redux-form'
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { useLazyQuery, useMutation } from '@apollo/client'
 
 import _get from 'lodash/get'
 import _isString from 'lodash/isString'
+
+import { GET_EXISTING_EMPLOYEE } from '../../graphql/queries'
+import { POST_NEW_EMPLOYEE } from '../../graphql/mutations'
 
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
@@ -31,118 +34,6 @@ import ExperienceDetails from './ExperienceDetails'
 import CurrentWork from './CurrentWork'
 
 
-const GET_EXISTING_DATA = gql`
-    query ByIdQuery($_id: ID!) {
-        employee(_id: $_id) {
-            _id
-            personal_details {
-                first_name
-                last_name
-                date_of_birth
-                phone
-                email
-                profile_pic
-            }
-            bank_details {
-                account_number
-                ifsc
-                pan_card_number
-                adhaar_card_number
-            }
-            professional_details {
-                experience {
-                    years
-                    months
-                }
-                skills
-                resume
-            }
-            educational_details {
-                _id
-                course
-                university
-                passed_on
-                grade
-            }
-            past_works {
-                _id
-                company
-                designation
-                department
-                ctc
-                from
-                to
-            }
-            current_work {
-                company
-                designation
-                department
-                ctc
-                from
-            }
-            createdAt
-            updatedAt
-            schema_version 
-        }
-    }
-`
-
-const POST_NEW_DATA = gql`
-    mutation Post($data: EmployeeInput!) {
-        post(data: $data) {
-            _id
-            personal_details {
-                first_name
-                last_name
-                date_of_birth
-                phone
-                email
-                profile_pic
-            }
-            bank_details {
-                account_number
-                ifsc
-                pan_card_number
-                adhaar_card_number
-            }
-            professional_details {
-                experience {
-                    years
-                    months
-                }
-                skills
-                resume
-            }
-            educational_details {
-                _id
-                course
-                university
-                passed_on
-                grade
-            }
-            past_works {
-                _id
-                company
-                designation
-                department
-                ctc
-                from
-                to
-            }
-            current_work {
-                company
-                designation
-                department
-                ctc
-                from
-            }
-            createdAt
-            updatedAt
-            schema_version 
-        }
-    }
-`
-
 
 const useStyles = makeStyles({
     spaced: {
@@ -166,7 +57,7 @@ const Form = ({
     const [removeAlert, setRemoveAlert] = useState(false)
 
     const [ fetchEmployee ] = useLazyQuery(
-        GET_EXISTING_DATA,
+        GET_EXISTING_EMPLOYEE,
         {
             variables: {
                 _id: _get(match, "params.id")
@@ -198,7 +89,7 @@ const Form = ({
     }, [])
 
     const [ post ] = useMutation(
-        POST_NEW_DATA,
+        POST_NEW_EMPLOYEE,
         // {
         //     onError: () => {}
         // }    

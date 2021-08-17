@@ -1,12 +1,12 @@
 import React, { useState, useMemo, useCallback } from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { useTable, usePagination } from 'react-table'
 
 import _get from 'lodash/get'
 import _ceil from 'lodash/ceil'
 
 import { cache } from '../../cache'
-
+import { GET_EMPLOYEE_LIST, GET_EMPLOYEE_LIST_STATE } from '../../graphql/queries'
 
 import { makeStyles } from '@material-ui/core/styles'
 import Box from '@material-ui/core/Box'
@@ -24,43 +24,6 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination'
 
 
-const GET_EMPLOYEE_LIST = gql`
-  query ListQuery(
-    $keys: String!
-    $search: String
-    $skip: Int
-    $limit: Int
-  ) {
-    employeeList(
-      keys: $keys
-      search: $search
-      skip: $skip
-      limit: $limit
-    ) {
-      meta {
-        count
-      }
-      data {
-        _id
-        personal_details {
-          first_name
-          last_name
-        }
-        current_work {
-          designation
-          department
-        }
-      }
-    }
-  }
-` 
-const GET_LIST_STATE = gql`
-  query SearchList {
-    search @client
-    currentPageIndex @client
-    rowsPerPage @client
-  }
-`
 
 const useStyles = makeStyles({
   spaced: {
@@ -87,7 +50,7 @@ const List = ({
 
   const { 
     data:  { search, currentPageIndex, rowsPerPage }  = {search: "", currentPageIndex: 0, rowsPerPage: 10} 
-  } = useQuery(GET_LIST_STATE)
+  } = useQuery(GET_EMPLOYEE_LIST_STATE)
 
   const { 
     data: { employeeList: { data, meta: { count } } } = {employeeList: {data: [], meta: {count: 0}} }, 
@@ -145,7 +108,7 @@ const List = ({
     console.log("gql search", search)
   
     cache.writeQuery({
-      query: GET_LIST_STATE,
+      query: GET_EMPLOYEE_LIST_STATE,
       data: {
         search: search,
         currentPageIndex: newPageIndex,
@@ -163,7 +126,7 @@ const List = ({
     console.log("gql search", search)
   
     cache.writeQuery({
-      query: GET_LIST_STATE,
+      query: GET_EMPLOYEE_LIST_STATE,
       data: {
         search: search,
         currentPageIndex: 0,
@@ -183,7 +146,7 @@ const List = ({
     setLocalSearch(_get(event, "target.value", ""))
 
     cache.writeQuery({
-      query: GET_LIST_STATE,
+      query: GET_EMPLOYEE_LIST_STATE,
       data: {
         search: _get(event, "target.value", ""),
         currentPageIndex: 0,
