@@ -8,7 +8,8 @@ import _isString from 'lodash/isString'
 import _set from 'lodash/set'
 import _map from 'lodash/map'
 
-import { GET_EXISTING_EMPLOYEE } from '../../graphql/queries'
+import { cache } from '../../cache'
+import { GET_EXISTING_EMPLOYEE, GET_GLOBAL_ALERT } from '../../graphql/queries'
 import { POST_NEW_EMPLOYEE, PUT_EMPLOYEE, DELETE_EMPLOYEE } from '../../graphql/mutations'
 import { omitDeepFields } from '../../utilities'
 
@@ -25,7 +26,6 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 
-import { setGlobalAlert } from '../../state/globalAlert/actions'
 import syncValidate from './syncValidate'
 
 import PersonalDetails from './PersonalDetails'
@@ -74,32 +74,12 @@ export const formName = "employee"
 const Form = ({
     initialize,
     destroy,
-    setGlobalAlert,
     location,
     match,
     history,
 }) => {
     const [activeStep, setActiveStep] = useState(0)
     const [removeAlert, setRemoveAlert] = useState(false)
-
-    const [ fetchEmployee ] = useLazyQuery(
-        GET_EXISTING_EMPLOYEE,
-        {
-            variables: {
-                _id: _get(match, "params.id")
-            },
-            fetchPolicy: "network-only",
-            onCompleted: ({ employee }) => {
-            
-                console.log("onComplete fetchEmployee", employee)
-                const normalizedEmployee = normalizeInitialValues(employee)
-                console.log("onComplete normaizedEmployee", normalizedEmployee)
-
-                initialize(formName, normalizedEmployee)
-            },
-            // onError: () => {},
-        }
-    )
 
     useEffect(() => {
         const id = _get(match, "params.id")
@@ -118,28 +98,68 @@ const Form = ({
         // eslint-disable-next-line 
     }, [])
 
+    const [ fetchEmployee ] = useLazyQuery(
+        GET_EXISTING_EMPLOYEE,
+        {
+            variables: {
+                _id: _get(match, "params.id")
+            },
+            fetchPolicy: "network-only",
+            onCompleted: ({ employee }) => {
+            
+                console.log("onComplete fetchEmployee", employee)
+                const normalizedEmployee = normalizeInitialValues(employee)
+                console.log("onComplete normaizedEmployee", normalizedEmployee)
+
+                initialize(formName, normalizedEmployee)
+            },
+            onError: (error) => {
+                console.log("list error", error, "\n", error.message, "\n", error.graphQLErrors, "\n", error.networkError)
+                cache.writeQuery({
+                    query: GET_GLOBAL_ALERT,
+                    data: {
+                        isAlert: true,
+                        severity: "error",
+                        message: error.message || "Getting employee doc failed",
+                    }
+                })
+            },
+        }
+    )
+
     const [ post ] = useMutation(
         POST_NEW_EMPLOYEE,
-        // {
-        //     onError: () => {}
-        // }    
     )
 
     const [ put ] = useMutation(
         PUT_EMPLOYEE,
-        // {
-        //     onError: () => {}
-        // }
     )
 
     const [ remove ] = useMutation(
         DELETE_EMPLOYEE,
         {
-            onCompleted: () => {
-                // show success message
+            onCompleted: ({ delete: { personal_details: { first_name, last_name } }}) => {
+                cache.writeQuery({
+                    query: GET_GLOBAL_ALERT,
+                    data: {
+                        isAlert: true,
+                        severity: "success",
+                        message: `Removed "${first_name} ${last_name}" successfully`,
+                    }
+                })
                 history.replace("/")
             },
-            // onError: () => {}
+            onError: (error) => {
+                console.log("list error", error, "\n", error.message, "\n", error.graphQLErrors, "\n", error.networkError)
+                cache.writeQuery({
+                    query: GET_GLOBAL_ALERT,
+                    data: {
+                        isAlert: true,
+                        severity: "error",
+                        message: error.message || "Removing employee doc failed",
+                    }
+                })
+            },
         }
     )
 
@@ -195,29 +215,43 @@ const Form = ({
             })
         } catch({ message, response }) {
             console.log("handleSubmit catch", message, response, _get(response, "data"))
-            // return Promise.reject(_get(response, "data.message"))
+
             throw new SubmissionError(_get(response, "data", message))
         }
         // eslint-disable-next-line
     }, [])
 
-    const handleSubmitSuccess = useCallback(() => {
-        console.log("handleSubmitSuccess")
+    const handleSubmitSuccess = useCallback(({ data: { 
+        put: { personal_details: { first_name: firstNamePut, last_name: lastNamePut } } = {personal_details: {first_name: "", last_name: ""}} , 
+        post: { personal_details: { first_name: firstNamePost, last_name: lastNamePost } } = {personal_details: {first_name: "", last_name: ""}}, 
+    } }) => {
+        console.log("handleSubmitSuccess", )
         destroy(formName)
-        setGlobalAlert(
-            "success",
-            "Saved successfully"
-        )
+
+        cache.writeQuery({
+            query: GET_GLOBAL_ALERT,
+            data: {
+                isAlert: true,
+                severity: "success",
+                message: `Saved "${firstNamePost || firstNamePut} ${lastNamePost || lastNamePut}" successfully`,
+            }
+        })
         history.push("/")
         // eslint-disable-next-line
     }, [],)
 
     const handleSubmitFail = useCallback((errors) => {
         console.log("handleSubmitFail", errors)
-        setGlobalAlert(
-            "error",
-            _get(errors, "message", _isString(errors) ? errors : "Submit failed"),
-        )
+
+        cache.writeQuery({
+            query: GET_GLOBAL_ALERT,
+            data: {
+                isAlert: true,
+                severity: "error",
+                message: _get(errors, "message", _isString(errors) ? errors : "Submit failed"),
+            }
+        })
+
         // eslint-disable-next-line
     }, [])
 
@@ -355,20 +389,15 @@ const Form = ({
     )
 }
 
-const mapStateToProps = state => {
-    return {
-    }
-}
 
 const mapDispatchToProps = dispatch => {
     return {
         initialize: (formName, data) => dispatch(initialize(formName, data)),
         destroy: formName => dispatch(destroy(formName)),
-        setGlobalAlert: (severity, message) => dispatch(setGlobalAlert(severity, message)),
     }
 }
 
 export default connect(
-    mapStateToProps,
+    null,
     mapDispatchToProps,
 )(Form)

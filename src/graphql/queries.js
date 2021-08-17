@@ -51,3 +51,11 @@ export const GET_EXISTING_EMPLOYEE = gql`
         }
     }
 `
+
+export const GET_GLOBAL_ALERT = gql`
+    query GetGlobalAlert {
+        isAlert @client
+        severity @client
+        message @client
+    }
+`

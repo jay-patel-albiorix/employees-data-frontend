@@ -6,7 +6,7 @@ import _get from 'lodash/get'
 import _ceil from 'lodash/ceil'
 
 import { cache } from '../../cache'
-import { GET_EMPLOYEE_LIST, GET_EMPLOYEE_LIST_STATE } from '../../graphql/queries'
+import { GET_EMPLOYEE_LIST, GET_EMPLOYEE_LIST_STATE, GET_GLOBAL_ALERT } from '../../graphql/queries'
 
 import { makeStyles } from '@material-ui/core/styles'
 import Box from '@material-ui/core/Box'
@@ -71,11 +71,21 @@ const List = ({
         limit: rowsPerPage,
       },
       fetchPolicy: "network-only",
-      // onError: () => {},
+      onError: (error) => {
+        console.log("list error", error, "\n", error.message, "\n", error.graphQLErrors, "\n", error.networkError)
+        cache.writeQuery({
+          query: GET_GLOBAL_ALERT,
+          data: {
+              isAlert: true,
+              severity: "error",
+              message: error.message || "Getting list failed",
+          }
+        })
+      },
     }
   )
 
-  console.log("gql error in getting list", error)
+  // console.log("gql error in getting list", error)
   // console.log("\ngql list is loading", loading)
   // console.log("\ngql list data", data)
   console.log("gql currentPageIndex", currentPageIndex)

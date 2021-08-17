@@ -32,7 +32,7 @@ export const submit = (id, values) => async dispatch => {
             return await api.employee.post(values)
         }
     } catch({message, response}) {
-        console.log("submitting employee form failed", message, response)
+        console.log("Submitting employee form failed", message, response)
         // error shown in component
         return Promise.reject({message, response})
     }

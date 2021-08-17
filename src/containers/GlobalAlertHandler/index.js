@@ -1,14 +1,26 @@
-import React from 'react'
-import { connect } from 'react-redux'
+import React, { useCallback } from 'react'
+import { useQuery } from '@apollo/client'
 
-import _get from 'lodash/get'
-
-import { clearGlobalAlert } from '../../state/globalAlert/actions'
+import { cache } from '../../cache'
+import { GET_GLOBAL_ALERT } from '../../graphql/queries'
 
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 
-const SnackbarAlert = ({open, onClose, severity, message}) => {
+const SnackbarAlert = () => {
+    const { data: { isAlert: open, severity, message } = {isAlert: false, severity: "success", message: ""} } = useQuery(GET_GLOBAL_ALERT)
+
+    const onClose = useCallback(() => {
+        cache.writeQuery({
+            query: GET_GLOBAL_ALERT,
+            data: {
+                isAlert: false,
+                severity: "success",
+                message: "",
+            }
+        })
+    }, [])
+
     return (
         <Snackbar 
             open={open}
@@ -24,18 +36,4 @@ const SnackbarAlert = ({open, onClose, severity, message}) => {
     )
 }
 
-const mapStateToProps = state => {
-    return {
-        open: _get(state, "globalAlert.isAlert"),
-        severity: _get(state, "globalAlert.severity"),
-        message: _get(state, "globalAlert.message"),
-    }
-}
-
-const mapDispatchToProps = dispatch => {
-    return {
-        onClose: () => dispatch(clearGlobalAlert()),
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(SnackbarAlert)
+export default SnackbarAlert
