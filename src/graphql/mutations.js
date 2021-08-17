@@ -20,3 +20,12 @@ export const PUT_EMPLOYEE = gql`
         }
     }
 `
+
+export const DELETE_EMPLOYEE = gql`
+    ${EMPLOYEE_DATA_FRAGMENT}
+    mutation Delete($_id: ID!) {
+        delete(_id: $_id) {
+            ...EmployeeDataFragment
+        }
+    }
+`

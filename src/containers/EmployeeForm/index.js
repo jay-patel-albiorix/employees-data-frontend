@@ -9,7 +9,7 @@ import _set from 'lodash/set'
 import _map from 'lodash/map'
 
 import { GET_EXISTING_EMPLOYEE } from '../../graphql/queries'
-import { POST_NEW_EMPLOYEE, PUT_EMPLOYEE } from '../../graphql/mutations'
+import { POST_NEW_EMPLOYEE, PUT_EMPLOYEE, DELETE_EMPLOYEE } from '../../graphql/mutations'
 import { omitDeepFields } from '../../utilities'
 
 import { makeStyles } from '@material-ui/core/styles'
@@ -25,7 +25,6 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 
-import { submit, remove } from '../../state/employeeForm/actions'
 import { setGlobalAlert } from '../../state/globalAlert/actions'
 import syncValidate from './syncValidate'
 
@@ -75,8 +74,6 @@ export const formName = "employee"
 const Form = ({
     initialize,
     destroy,
-    submit,
-    remove,
     setGlobalAlert,
     location,
     match,
@@ -133,6 +130,17 @@ const Form = ({
         // {
         //     onError: () => {}
         // }
+    )
+
+    const [ remove ] = useMutation(
+        DELETE_EMPLOYEE,
+        {
+            onCompleted: () => {
+                // show success message
+                history.replace("/")
+            },
+            // onError: () => {}
+        }
     )
 
     const classes = useStyles()
@@ -217,15 +225,12 @@ const Form = ({
 
     const handleConfirmRemoveAlert = useCallback(async () => {
         const id = _get(match, "params.id")
-        const { data } = await remove(id)
-        console.log("removed employee", data)
-        if(data) {
-            setGlobalAlert(
-                "success",
-                "Saved successfully"
-            )
-            history.replace("/")
-        }
+        remove({
+            variables: {
+                _id: id
+            },
+        })
+
         // eslint-disable-next-line
     }, [])
 
@@ -359,8 +364,6 @@ const mapDispatchToProps = dispatch => {
     return {
         initialize: (formName, data) => dispatch(initialize(formName, data)),
         destroy: formName => dispatch(destroy(formName)),
-        submit: (id, values) => dispatch(submit(id, values)),
-        remove: id => dispatch(remove(id)),
         setGlobalAlert: (severity, message) => dispatch(setGlobalAlert(severity, message)),
     }
 }
