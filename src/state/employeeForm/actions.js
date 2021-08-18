@@ -56,7 +56,7 @@ export const remove = id => async dispatch => {
 export const upload = formData => async dispatch => {
     try {
         console.log("upload action formData", formData)
-        return api.employee.upload(formData)
+        return await api.employee.upload(formData)
     } catch({message, response}) {
         console.log("uploading failed", message, response)
         dispatch(setGlobalAlert(
