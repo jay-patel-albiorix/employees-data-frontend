@@ -10,7 +10,7 @@ import './index.css';
 import App from './App';
 import { cache } from './graphql/cache'
 
-const server = "http://localhost:4000"
+const server = "https://arcane-peak-34168.herokuapp.com"
 const link = createUploadLink({
   uri: `${server}/graphql`,
   headers: {
