@@ -29,3 +29,11 @@ export const DELETE_EMPLOYEE = gql`
         }
     }
 `
+
+export const UPLOAD = gql`
+    mutation Upload($file: Upload!) {
+        upload(file: $file) {
+            url
+        }
+    }
+`

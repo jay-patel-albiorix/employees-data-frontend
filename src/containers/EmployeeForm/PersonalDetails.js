@@ -1,8 +1,10 @@
 import React, { useCallback } from 'react'
-import { connect } from 'react-redux'
 import { reduxForm, Field } from 'redux-form'
+import { useMutation } from '@apollo/client'
 
 import _get from 'lodash/get'
+
+import { UPLOAD } from '../../graphql/mutations'
 
 import { makeStyles } from '@material-ui/core/styles'
 import Box from '@material-ui/core/Box'
@@ -12,7 +14,7 @@ import ActionButtons from './ActionButtons'
 import RenderImage from '../../components/Image/FormField'
 import RenderTextField from '../../components/TextField/FormField'
 import RenderDatePicker from '../../components/DatePicker/FormField'
-import { upload } from '../../state/employeeForm/actions'
+
 
 const useStyles = makeStyles({
     fieldContainer: {
@@ -45,8 +47,12 @@ const PersonalDetails = ({
     handleRemove, 
     handlePrev, 
     handleExit,
-    upload,
 }) => {
+
+    const [ upload ] = useMutation(
+        UPLOAD,
+    )
+
     const classes = useStyles()
 
     const handleUpload = useCallback(async (e) => {
@@ -54,11 +60,14 @@ const PersonalDetails = ({
             console.log("handleUpload", "\nevent", e)
             if (_get(e, "target.files.length") === 1) {
 
-                const uploadFormData = new FormData()
-                uploadFormData.append("upload", _get(e, "target.files[0]"))
+                console.log("uploading file", _get(e, "target.files[0]"))
     
-                const { data: { url } } = await upload(uploadFormData)
-                console.log("profile_pic", url)
+                const { data: { upload: { url } } } = await upload({
+                    variables: {
+                        file: _get(e, "target.files[0]"),
+                    }
+                })
+                console.log("url", url)
                 return url
             }
         } catch(err) {
@@ -145,16 +154,4 @@ const PersonalDetails = ({
     )
 }
 
-
-const mapDispatchToProps = dispatch => {
-    return {
-        upload: formData => dispatch(upload(formData)),
-    }
-}
-
-export default connect(
-    null,
-    mapDispatchToProps,
-)(
-    reduxForm({})(PersonalDetails)
-)
+export default reduxForm({})(PersonalDetails)

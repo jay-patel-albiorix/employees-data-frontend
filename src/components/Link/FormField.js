@@ -6,7 +6,7 @@ import Input from '@material-ui/core/Input'
 import InputLabel from '@material-ui/core/InputLabel'
 import FormHelperText from '@material-ui/core/FormHelperText'
 
-const FormField = ({input, meta: {touched, invalid, error}, linkChild, showError, formHelperTextProps, inputLabelProps, inputLabelChild, inputProps, upload, ...props}) => {
+const FormField = ({input, meta: {touched, invalid, error}, linkButtonLabel, showError, formHelperTextProps, inputLabelProps, inputLabelChild, inputProps, upload, ...props}) => {
     console.log("RenderLink", input)
     return (
         <Box>
@@ -29,7 +29,7 @@ const FormField = ({input, meta: {touched, invalid, error}, linkChild, showError
                 </FormHelperText>
             }
             {input.value && (input.value !== "#") &&
-                <Button href={input.value} color="primary" variant="outlined" target="_blank">View</Button>
+                <Button href={input.value} color="primary" variant="outlined" target="_blank">{linkButtonLabel || "View"}</Button>
             }
         </Box>
     )

@@ -6,7 +6,7 @@ import InputLabel from '@material-ui/core/InputLabel'
 import FormHelperText from '@material-ui/core/FormHelperText'
 
 const FormField = ({input, meta: {touched, invalid, error}, showError, formHelperTextProps, inputLabelProps, inputLabelChild, inputProps, imgProps, upload, ...props}) => {
-    console.log("RenderImage", input)
+    // console.log("RenderImage", input)
     return (
         <Box>
             <img 
@@ -23,6 +23,7 @@ const FormField = ({input, meta: {touched, invalid, error}, showError, formHelpe
             <Input
                 type="file"
                 onChange={async (event) => {
+                    console.log("input onchange event", event)
                     input.onChange("https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif")
                     const url = await upload(event)
                     input.onChange(url)
