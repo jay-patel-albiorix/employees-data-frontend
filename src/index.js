@@ -8,7 +8,7 @@ import { BrowserRouter } from 'react-router-dom'
 import store from './state/store'
 import './index.css';
 import App from './App';
-import { cache } from './cache'
+import { cache } from './graphql/cache'
 
 const server = "http://localhost:4000"
 const link = createUploadLink({

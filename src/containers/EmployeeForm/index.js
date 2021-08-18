@@ -8,7 +8,7 @@ import _isString from 'lodash/isString'
 import _set from 'lodash/set'
 import _map from 'lodash/map'
 
-import { cache } from '../../cache'
+import { cache } from '../../graphql/cache'
 import { GET_EXISTING_EMPLOYEE, GET_GLOBAL_ALERT } from '../../graphql/queries'
 import { POST_NEW_EMPLOYEE, PUT_EMPLOYEE, DELETE_EMPLOYEE } from '../../graphql/mutations'
 import { omitDeepFields } from '../../utilities'

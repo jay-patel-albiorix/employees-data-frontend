@@ -5,7 +5,7 @@ import { useTable, usePagination } from 'react-table'
 import _get from 'lodash/get'
 import _ceil from 'lodash/ceil'
 
-import { cache } from '../../cache'
+import { cache } from '../../graphql/cache'
 import { GET_EMPLOYEE_LIST, GET_EMPLOYEE_LIST_STATE, GET_GLOBAL_ALERT } from '../../graphql/queries'
 
 import { makeStyles } from '@material-ui/core/styles'

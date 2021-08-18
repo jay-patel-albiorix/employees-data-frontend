@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import { useQuery } from '@apollo/client'
 
-import { cache } from '../../cache'
+import { cache } from '../../graphql/cache'
 import { GET_GLOBAL_ALERT } from '../../graphql/queries'
 
 import Snackbar from '@material-ui/core/Snackbar';
