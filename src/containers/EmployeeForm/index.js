@@ -199,6 +199,8 @@ const Form = ({
         try {
             console.log("submitting using gql", values)
 
+            delete values.updatedAt
+
             const id = _get(match, "params.id")
             return id ? (
                await put({
