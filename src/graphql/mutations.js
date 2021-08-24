@@ -12,10 +12,10 @@ export const POST_NEW_EMPLOYEE = gql`
 `
 
 
-export const PUT_EMPLOYEE = gql`
+export const PATCH_EMPLOYEE = gql`
     ${EMPLOYEE_DATA_FRAGMENT}
-    mutation Put($_id: ID!, $data: EmployeeInput!) {
-        put(_id: $_id, data: $data) {
+    mutation Patch($_id: ID!, $data: EmployeeInput!) {
+        patch(_id: $_id, data: $data) {
             ...EmployeeDataFragment
         }
     }

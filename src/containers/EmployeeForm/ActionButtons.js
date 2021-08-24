@@ -16,7 +16,7 @@ const useStyles = makeStyles({
     },    
 })
 
-const ActionButtons = ({ id, activeStep, handleRemove, handlePrev, handleExit, nextBtnProps = {}, submitBtnProps = {} }) => {
+const ActionButtons = ({ id, activeStep, nextDisabled, handleRemove, handlePrev, handleExit, handleNext }) => {
     const classes = useStyles()
 
     return (
@@ -30,7 +30,7 @@ const ActionButtons = ({ id, activeStep, handleRemove, handlePrev, handleExit, n
                 Remove
             </Button>
             <Box>
-                <Button 
+                <Button     // replace with icon
                     className={classes.spaced}
                     disabled={activeStep === 0} 
                     onClick={handlePrev} 
@@ -47,23 +47,22 @@ const ActionButtons = ({ id, activeStep, handleRemove, handlePrev, handleExit, n
                 >
                     Exit
                 </Button>
-                <Button
+                <Button     // replace with icon
                     className={classes.spaced}
-                    variant="contained"
+                    onClick={handleNext}
+                    variant="outlined"
                     color="primary"
-                    disabled={activeStep === 5} 
-                    {...nextBtnProps}
+                    disabled={nextDisabled || (activeStep === 5)} 
                 >
-                    Next
+                    Skip
                 </Button>
             </Box>
             <Button
-                disabled={activeStep !== 5} 
                 color="primary"
                 variant="contained"
-                {...submitBtnProps}
+                type="submit"
             >
-                Submit
+                Save
             </Button>
         </Box>
     )

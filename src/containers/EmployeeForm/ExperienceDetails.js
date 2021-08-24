@@ -143,7 +143,7 @@ const RenderPastWorks = ({ fields, meta: { error } }) => {
     )
 }
 
-const ExperienceDetails = ({ id, handleSubmit, activeStep, handleRemove, handlePrev, handleExit }) => {
+const ExperienceDetails = ({ id, handleSubmit, activeStep, handleRemove, handlePrev, handleExit, handleNext }) => {
     const classes = useStyles()
 
     return (
@@ -160,7 +160,7 @@ const ExperienceDetails = ({ id, handleSubmit, activeStep, handleRemove, handleP
                 handleRemove={handleRemove}
                 handlePrev={handlePrev}
                 handleExit={handleExit}
-                nextBtnProps={{ type: "submit" }}
+                handleNext={handleNext}
             />
         </form>
 

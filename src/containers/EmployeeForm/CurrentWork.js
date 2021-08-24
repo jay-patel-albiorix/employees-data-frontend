@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { reduxForm, Field } from 'redux-form'
 
 import { makeStyles } from '@material-ui/core/styles'
@@ -22,8 +22,13 @@ const useStyles = makeStyles({
     }
 })
 
-const CurrentWork = ({ id, handleSubmit, activeStep, handleRemove, handlePrev, handleExit }) => {
+const CurrentWork = ({ id, handleSubmit, activeStep, handleRemove, handlePrev, handleExit, handleNext, change }) => {
     const classes = useStyles()
+
+    useEffect(() => {
+        change("current_work.company", "Albiorix Technology Private Limited")
+        // eslint-disable-next-line
+    }, [])
 
     return (
         <form onSubmit={handleSubmit}>
@@ -80,7 +85,7 @@ const CurrentWork = ({ id, handleSubmit, activeStep, handleRemove, handlePrev, h
                 handleRemove={handleRemove}
                 handlePrev={handlePrev}
                 handleExit={handleExit}
-                nextBtnProps={{type: "submit"}}
+                handleNext={handleNext}
             />
         </form>
     )

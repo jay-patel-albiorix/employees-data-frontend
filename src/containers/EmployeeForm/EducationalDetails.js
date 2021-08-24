@@ -124,7 +124,7 @@ const RenderEducations = ({ fields, meta: { error } }) => {
     )
 }
 
-const EducationalDetails = ({ id, handleSubmit, activeStep, handleRemove, handlePrev, handleExit }) => {
+const EducationalDetails = ({ id, handleSubmit, activeStep, handleRemove, handlePrev, handleExit, handleNext }) => {
     const classes = useStyles()
 
     return (
@@ -141,7 +141,7 @@ const EducationalDetails = ({ id, handleSubmit, activeStep, handleRemove, handle
                 handleRemove={handleRemove}
                 handlePrev={handlePrev}
                 handleExit={handleExit}
-                submitBtnProps={{type: "submit"}}
+                handleNext={handleNext}
             />
         </form>
     )

@@ -47,6 +47,8 @@ const PersonalDetails = ({
     handleRemove, 
     handlePrev, 
     handleExit,
+    handleNext,
+    nextDisabled,
 }) => {
 
     const [ upload ] = useMutation(
@@ -148,7 +150,8 @@ const PersonalDetails = ({
                 handleRemove={handleRemove}
                 handlePrev={handlePrev}
                 handleExit={handleExit}
-                nextBtnProps={{ type: "submit" }}
+                handleNext={handleNext}
+                nextDisabled={nextDisabled}
             />
         </form>
     )

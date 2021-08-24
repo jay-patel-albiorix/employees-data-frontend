@@ -8,6 +8,8 @@ const Routes = () => {
     return (
         <Switch>
             <Route exact path="/" component={EmployeeList}/>
+            
+            {/* don't add key on /employee-data & /employee-data/:id Route */}
             <Route exact path="/employee-form" component={EmployeeForm} />
             <Route exact path="/employee-form/:id" component={EmployeeForm} />
         </Switch>

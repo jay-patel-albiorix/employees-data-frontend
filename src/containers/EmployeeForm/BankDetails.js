@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     }
 })
 
-const BankDetails = ({ id, handleSubmit, activeStep, handleRemove, handlePrev, handleExit }) => {
+const BankDetails = ({ id, handleSubmit, activeStep, handleRemove, handlePrev, handleExit, handleNext }) => {
     const classes = useStyles()
 
     return (
@@ -63,7 +63,7 @@ const BankDetails = ({ id, handleSubmit, activeStep, handleRemove, handlePrev, h
                 handleRemove={handleRemove}
                 handlePrev={handlePrev}
                 handleExit={handleExit}
-                nextBtnProps={{type: "submit"}}
+                handleNext={handleNext}
             />
         </form>
     )

@@ -10,7 +10,7 @@ import _map from 'lodash/map'
 
 import { cache } from '../../graphql/cache'
 import { GET_EXISTING_EMPLOYEE, GET_GLOBAL_ALERT } from '../../graphql/queries'
-import { POST_NEW_EMPLOYEE, PUT_EMPLOYEE, DELETE_EMPLOYEE } from '../../graphql/mutations'
+import { POST_NEW_EMPLOYEE, PATCH_EMPLOYEE, DELETE_EMPLOYEE } from '../../graphql/mutations'
 import { omitDeepFields } from '../../utilities'
 
 import { makeStyles } from '@material-ui/core/styles'
@@ -78,6 +78,8 @@ const Form = ({
     match,
     history,
 }) => {
+    
+    console.log("rendering employee form")
     const [activeStep, setActiveStep] = useState(0)
     const [removeAlert, setRemoveAlert] = useState(false)
 
@@ -98,18 +100,19 @@ const Form = ({
         // eslint-disable-next-line 
     }, [])
 
-    const [ fetchEmployee ] = useLazyQuery(
+    const [ fetchEmployee, { data: { employee } = {} } ] = useLazyQuery(
         GET_EXISTING_EMPLOYEE,
         {
             variables: {
                 _id: _get(match, "params.id")
             },
             fetchPolicy: "network-only",
+            notifyOnNetworkStatusChange: true,
             onCompleted: ({ employee }) => {
             
-                console.log("onComplete fetchEmployee", employee)
+                // console.log("fetchEmployee onComplete employee", employee)
                 const normalizedEmployee = normalizeInitialValues(employee)
-                console.log("onComplete normaizedEmployee", normalizedEmployee)
+                console.log("fetchEmployee onComplete normalizedEmployee", normalizedEmployee)
 
                 initialize(formName, normalizedEmployee)
             },
@@ -129,10 +132,16 @@ const Form = ({
 
     const [ post ] = useMutation(
         POST_NEW_EMPLOYEE,
+        {
+            onCompleted: ({ post: {_id, ...employee} }) => {
+                console.log("posted employee", _id, employee)
+                history.replace(`/employee-form/${_id}`)    // don't add key on /employee-data & /employee-data/:id Route
+            }
+        }
     )
 
-    const [ put ] = useMutation(
-        PUT_EMPLOYEE,
+    const [ patch ] = useMutation(
+        PATCH_EMPLOYEE,
     )
 
     const [ remove ] = useMutation(
@@ -166,12 +175,30 @@ const Form = ({
     const classes = useStyles()
 
     const steps = useMemo(() => [
-        "Personal Details", 
-        "Bank Details", 
-        "Professional Details", 
-        "Current Status", 
-        "Experience Details", 
-        "Educational Details"
+        {
+            field: "personal_details",
+            label: "Personal Details",
+        }, 
+        {
+            field: "bank_details",
+            label: "Bank Details",
+        }, 
+        {
+            field: "professional_details",
+            label: "Professional Details",
+        }, 
+        {
+            field: "current_work",
+            label: "Current Status",
+        }, 
+        {
+            field: "past_works",
+            label: "Experience Details",
+        }, 
+        {
+            field: "educational_details",
+            label: "Educational Details",
+        },
     ], [])
 
     const handleRemove = useCallback(() => {
@@ -182,8 +209,17 @@ const Form = ({
     }, [])
 
     const handlePrev = useCallback(() => {
+        if(employee) {
+            const normalizedEmployee = normalizeInitialValues(employee)
+            console.log("handlePrev normaizedEmployee", normalizedEmployee)
+            initialize(formName, normalizedEmployee)
+        } else if(_get(match, "params.id")) {
+            fetchEmployee()
+        }
+
         setActiveStep(step => step > 0 ? step - 1 : 0)
-    }, [])
+        // eslint-disable-next-line
+    }, [employee, match])
 
     const handleExit = useCallback(() => {
         destroy(formName)
@@ -192,55 +228,68 @@ const Form = ({
     }, [])
 
     const handleNext = useCallback(() => {
+        if(employee) {
+            const normalizedEmployee = normalizeInitialValues(employee)
+            console.log("handleNext normalizedEmployee", normalizedEmployee)
+            initialize(formName, normalizedEmployee)
+        } else if(_get(match, "params.id")) {
+            fetchEmployee()
+        }
+
         setActiveStep(step => step < 5 ? step + 1 : 5)
-    }, [])
+        // eslint-disable-next-line
+    }, [employee, match])
 
     const handleSubmit = useCallback(async (values,) => {
         try {
-            console.log("submitting using gql", values)
 
-            delete values.updatedAt
+            // delete values.updatedAt
+            const { [steps[activeStep]["field"]]: currentStepValues } = values
+
+            console.log("saving currentStepValues", {[steps[activeStep]["field"]]: currentStepValues})
 
             const id = _get(match, "params.id")
             return id ? (
-               await put({
+               await patch({
                     variables: {
                         _id: id,
-                        data: values,
+                        data: {[steps[activeStep]["field"]]: currentStepValues},
                     }
                 })
             ) : await post({
                 variables: {
-                    data: values
-                }
-          
+                    data: {[steps[activeStep]["field"]]: currentStepValues}
+                },
             })
+          
+               
         } catch({ message, response }) {
             console.log("handleSubmit catch", message, response, _get(response, "data"))
 
             throw new SubmissionError(_get(response, "data", message))
         }
         // eslint-disable-next-line
-    }, [])
+    }, [activeStep])
 
     const handleSubmitSuccess = useCallback(({ data: { 
-        put: { personal_details: { first_name: firstNamePut, last_name: lastNamePut } } = {personal_details: {first_name: "", last_name: ""}} , 
+        patch: { personal_details: { first_name: firstNamePut, last_name: lastNamePut } } = {personal_details: {first_name: "", last_name: ""}} , 
         post: { personal_details: { first_name: firstNamePost, last_name: lastNamePost } } = {personal_details: {first_name: "", last_name: ""}}, 
     } }) => {
         console.log("handleSubmitSuccess", )
-        destroy(formName)
+        activeStep === 5 && destroy(formName)
 
         cache.writeQuery({
             query: GET_GLOBAL_ALERT,
             data: {
                 isAlert: true,
                 severity: "success",
-                message: `Saved "${firstNamePost || firstNamePut} ${lastNamePost || lastNamePut}" successfully`,
+                message: `Saved "${firstNamePost || firstNamePut} ${lastNamePost || lastNamePut}"'s ${steps[activeStep]["label"]} successfully`,
             }
         })
-        history.push("/")
+        
+        activeStep === 5 ? history.push("/") : setActiveStep(step => step < 5 ? step + 1 : 5) 
         // eslint-disable-next-line
-    }, [],)
+    }, [activeStep])
 
     const handleSubmitFail = useCallback((errors) => {
         console.log("handleSubmitFail", errors)
@@ -306,7 +355,7 @@ const Form = ({
                         alternativeLabel 
                         activeStep={activeStep}
                     >
-                        {steps.map((label, index) => (
+                        {steps.map(({label}, index) => (
                             <Step key={label}>
                                 <StepLabel>
                                     {label}
@@ -324,8 +373,12 @@ const Form = ({
                         handleRemove={handleRemove}
                         handlePrev={handlePrev}
                         handleExit={handleExit}
+                        handleNext={handleNext}
+                        nextDisabled={_get(match, "params.id") ? false : true}
                         validate={syncValidate}       
-                        onSubmit={handleNext}       
+                        onSubmit={handleSubmit}
+                        onSubmitSuccess={handleSubmitSuccess}            
+                        onSubmitFail={handleSubmitFail}              
                     />}
                     {activeStep === 1 && <BankDetails 
                         id={_get(match, "params.id")}
@@ -335,8 +388,11 @@ const Form = ({
                         handleRemove={handleRemove}
                         handlePrev={handlePrev}
                         handleExit={handleExit}
+                        handleNext={handleNext}
                         validate={syncValidate}       
-                        onSubmit={handleNext}                   
+                        onSubmit={handleSubmit}
+                        onSubmitSuccess={handleSubmitSuccess}            
+                        onSubmitFail={handleSubmitFail}              
                     />}
                     {activeStep === 2 && <ProfessionalDetails 
                         id={_get(match, "params.id")}
@@ -346,8 +402,11 @@ const Form = ({
                         handleRemove={handleRemove}
                         handlePrev={handlePrev}
                         handleExit={handleExit}
+                        handleNext={handleNext}
                         validate={syncValidate}       
-                        onSubmit={handleNext}                   
+                        onSubmit={handleSubmit}     
+                        onSubmitSuccess={handleSubmitSuccess}            
+                        onSubmitFail={handleSubmitFail}              
                     />}
                     {activeStep === 3 && <CurrentWork 
                         id={_get(match, "params.id")}
@@ -357,8 +416,11 @@ const Form = ({
                         handleRemove={handleRemove}
                         handlePrev={handlePrev}
                         handleExit={handleExit}
+                        handleNext={handleNext}
                         validate={syncValidate}       
-                        onSubmit={handleNext}                   
+                        onSubmit={handleSubmit}                   
+                        onSubmitSuccess={handleSubmitSuccess}            
+                        onSubmitFail={handleSubmitFail}              
                     />}
                     {activeStep === 4 && <ExperienceDetails 
                         id={_get(match, "params.id")}
@@ -368,8 +430,11 @@ const Form = ({
                         handleRemove={handleRemove}
                         handlePrev={handlePrev}
                         handleExit={handleExit}
+                        handleNext={handleNext}
                         validate={syncValidate}       
-                        onSubmit={handleNext}                   
+                        onSubmit={handleSubmit}                   
+                        onSubmitSuccess={handleSubmitSuccess}            
+                        onSubmitFail={handleSubmitFail}              
                     />}
                     {activeStep === 5 && <EducationalDetails 
                         id={_get(match, "params.id")}
