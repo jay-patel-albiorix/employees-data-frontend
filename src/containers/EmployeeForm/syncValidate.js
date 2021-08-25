@@ -20,13 +20,13 @@ export const syncValidate = (values, ) => {
     if(!_get(values, "personal_details.date_of_birth")) {
         personalDetailsErrors["date_of_birth"] = "Required"
     } 
-    if(!_get(values, "personal_details.phone") && !_get(values, "personal_details.email")) {
-        personalDetailsErrors["phone"] = "Either phone or email is required"
+    if(!_get(values, "personal_details.phone")) {
+        personalDetailsErrors["phone"] = "Required"
     } else if(_get(values, "personal_details.phone") && (_get(values, "personal_details.phone.length") !== 10) && !/^\d{10}$/.test(_get(values, "personal_details.phone"))) {
         personalDetailsErrors["phone"] = "Invalid"
     }
-    if(!_get(values, "personal_details.email") && !_get(values, "personal_details.phone") ) {
-        personalDetailsErrors["email"] = "Either phone or email is required"
+    if(!_get(values, "personal_details.email")) {
+        personalDetailsErrors["email"] = "Required"
     } else if(_get(values, "personal_details.email") && !/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(_get(values, "personal_details.email"))) {
         personalDetailsErrors["email"] = "Invalid"
     }

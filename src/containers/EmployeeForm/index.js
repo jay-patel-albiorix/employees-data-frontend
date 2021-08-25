@@ -84,19 +84,10 @@ const Form = ({
     const [removeAlert, setRemoveAlert] = useState(false)
 
     useEffect(() => {
-        const id = _get(match, "params.id")
-        if(id) {
+        if(_get(match, "params.id")) {
            fetchEmployee()
-        } else {
-            initialize(
-                formName,
-                {
-                    current_work: {
-                        company: "Albiorix Technology Private Limited"
-                    }
-                }
-            )
-        }
+        } 
+     
         // eslint-disable-next-line 
     }, [])
 
